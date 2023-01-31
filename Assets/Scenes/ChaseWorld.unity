@@ -358,6 +358,7 @@ GameObject:
   m_Component:
   - component: {fileID: 93873844}
   - component: {fileID: 93873843}
+  - component: {fileID: 93873846}
   m_Layer: 0
   m_Name: CM FreeLook1
   m_TagString: Untagged
@@ -409,7 +410,7 @@ MonoBehaviour:
     m_MaxSpeed: 2
     m_AccelTime: 0.05
     m_DecelTime: 0.05
-    m_InputAxisName: Mouse Y
+    m_InputAxisName: 
     m_InputAxisValue: 0
     m_InvertInput: 1
     m_MinValue: 0
@@ -433,7 +434,7 @@ MonoBehaviour:
     m_MaxSpeed: 300
     m_AccelTime: 0.05
     m_DecelTime: 0.05
-    m_InputAxisName: Mouse X
+    m_InputAxisName: 
     m_InputAxisValue: 0
     m_InvertInput: 0
     m_MinValue: -90
@@ -487,6 +488,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &93873846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93873842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7194dc27b9df64c8beca7482ee8e0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
+  XYAxis: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  ZAxis: {fileID: 0}
 --- !u!1 &180154718
 GameObject:
   m_ObjectHideFlags: 3
@@ -556,7 +573,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 180154718}
-  m_LocalRotation: {x: -0, y: 3.2e-44, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -1.7e-44, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -634,7 +651,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195303650}
-  m_LocalRotation: {x: -0, y: 3.2e-44, z: -0, w: 1}
+  m_LocalRotation: {x: 3.5e-44, y: 3.5e-44, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -720,7 +737,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 288962676}
-  m_LocalRotation: {x: 0, y: 3.2e-44, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -1.7e-44, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.53, z: 0.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -996,7 +1013,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1496420715}
-  m_LocalRotation: {x: -1e-45, y: -1.1e-44, z: -0, w: 1}
+  m_LocalRotation: {x: 3.5e-44, y: -4.3e-44, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1233,14 +1250,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 572631753119477759, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.53
-      objectReference: {fileID: 0}
-    - target: {fileID: 572631753119477759, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.2
-      objectReference: {fileID: 0}
     - target: {fileID: 9203775667136961480, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
       propertyPath: m_Name
       value: Player
