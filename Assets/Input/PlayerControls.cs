@@ -53,6 +53,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Drift"",
+                    ""type"": ""Button"",
+                    ""id"": ""185f945e-4878-464b-a14c-da1739ba1a7a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -165,6 +174,28 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Turn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a314a973-849b-459b-83cc-37b01c443055"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5fe81b59-700f-44e6-9a27-e0e28acc33b9"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -204,6 +235,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Default_Look = m_Default.FindAction("Look", throwIfNotFound: true);
         m_Default_Drive = m_Default.FindAction("Drive", throwIfNotFound: true);
         m_Default_Turn = m_Default.FindAction("Turn", throwIfNotFound: true);
+        m_Default_Drift = m_Default.FindAction("Drift", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -266,6 +298,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Look;
     private readonly InputAction m_Default_Drive;
     private readonly InputAction m_Default_Turn;
+    private readonly InputAction m_Default_Drift;
     public struct DefaultActions
     {
         private @PlayerControls m_Wrapper;
@@ -273,6 +306,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Default_Look;
         public InputAction @Drive => m_Wrapper.m_Default_Drive;
         public InputAction @Turn => m_Wrapper.m_Default_Turn;
+        public InputAction @Drift => m_Wrapper.m_Default_Drift;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -291,6 +325,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Turn.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnTurn;
                 @Turn.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnTurn;
                 @Turn.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnTurn;
+                @Drift.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
+                @Drift.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
+                @Drift.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -304,6 +341,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Turn.started += instance.OnTurn;
                 @Turn.performed += instance.OnTurn;
                 @Turn.canceled += instance.OnTurn;
+                @Drift.started += instance.OnDrift;
+                @Drift.performed += instance.OnDrift;
+                @Drift.canceled += instance.OnDrift;
             }
         }
     }
@@ -331,5 +371,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnDrive(InputAction.CallbackContext context);
         void OnTurn(InputAction.CallbackContext context);
+        void OnDrift(InputAction.CallbackContext context);
     }
 }
