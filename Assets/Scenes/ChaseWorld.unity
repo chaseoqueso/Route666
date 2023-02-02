@@ -1810,6 +1810,10 @@ PrefabInstance:
       propertyPath: brakeStrength
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 3147893761818561444, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
+      propertyPath: modelTrackingSpeed
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 9203775667136961480, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
       propertyPath: m_Name
       value: Player

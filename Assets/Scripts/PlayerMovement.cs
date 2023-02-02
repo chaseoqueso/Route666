@@ -129,7 +129,15 @@ public class PlayerMovement : MonoBehaviour
         // ----------------------
 
         // Lean the model around the Z-axis
-        float leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
+        float leanAngle;
+        if(isGrounded)  // If the player is on the ground
+        {
+            leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
+        }
+        else            // If the player is in the air
+        {
+            leanAngle = 0;  // Don't lean
+        }
         Quaternion leanRotation = Quaternion.AngleAxis(leanAngle, Vector3.forward);         // Set the lean rotation
 
         // Skew the model if drifting
@@ -197,8 +205,13 @@ public class PlayerMovement : MonoBehaviour
             angleRange = new Vector2(driftAngle - driftAngleRange, driftAngle + driftAngleRange);   // The angle range is a narrow range beyond the max turn angle
         }
 
-        // Calculate ideal angle
-        float normalizedTurnInput = Mathf.InverseLerp(-1, 1, turnInput);                            // Get the turnInput from a scale of 0 to 1
+        // Convert turn input to a normalized value
+        float normalizedTurnInput;
+        if(isGrounded)                                                  // If the player is on the ground
+            normalizedTurnInput = Mathf.InverseLerp(-1, 1, turnInput);  // Get the turnInput from a scale of 0 to 1
+        else                                                            // Otherwise
+            normalizedTurnInput = 0.5f;                                 // Set the input to the middle
+        
         float idealTurnAngle = Mathf.SmoothStep(angleRange.x, angleRange.y, normalizedTurnInput);   // Get the desired turn angle based on the current angle range
 
         // Turn towards ideal angle
@@ -242,7 +255,10 @@ public class PlayerMovement : MonoBehaviour
         // --- PERFORM MOTION ---
         // ----------------------
                             
-        rb.MoveRotation(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * transform.rotation);  // Rotate the player around the Y-axis
+        if(isGrounded)
+        {
+            rb.MoveRotation(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * transform.rotation);  // Rotate the player around the Y-axis
+        }
 
         previousPosition = transform.position;                                                                  // Store the previous position
         Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity) + pushVelocity;   // Calculate total velocity
