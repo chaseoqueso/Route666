@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public void PlayGame ()
     {
-        
+        GameManager.instance.ChangeScene(GameManager.CUSTOMIZE_HORSE_SCENE_NAME);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void QuitGame ()
     {
-        
+       Debug.Log ("QUIT!");
+        Application.Quit();
     }
 }

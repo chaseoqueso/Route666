@@ -4,6 +4,12 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/UI Scenes/MainMenu.unity
+    guid: 21667e45ea30315469e2e044b2619cb3
+  - enabled: 1
+    path: Assets/Scenes/UI Scenes/CustomizeHorseUI.unity
+    guid: 2764ae0cf2714064ea1bd156b9a9ec86
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: eb4030b700b7e094db670060e1982666, type: 2}
