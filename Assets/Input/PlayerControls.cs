@@ -90,7 +90,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""1D Axis"",
                     ""id"": ""bc2bf787-0f74-441b-8fdf-5b69097e7f4b"",
-                    ""path"": ""1DAxis(whichSideWins=1)"",
+                    ""path"": ""1DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -137,7 +137,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/dpad/y"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Drive"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

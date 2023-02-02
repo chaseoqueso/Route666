@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-[RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
+[RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider), typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour
 {
     public enum DriftState
@@ -29,6 +29,10 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("The camera sensitivity.")]
     public float lookSensitivity = 1;
 
+    [Header("Controller")]
+    [Tooltip("The highest slope the player can climb in degrees.")]
+    [SerializeField] private float slopeLimit;
+
     [Header("Acceleration")]
     [Tooltip("The rate of acceleration in units/s^2.")]
     [SerializeField] private float acceleration;
@@ -46,7 +50,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxLeanAngle;
 
     [Header("Drifting")]
-    [Tooltip("The range above and below maxTurnAngle that turning inputs will range within while drifting.")]
+    [Tooltip("The angle that the player will drift toward when drifting without pressing turning inputs.")]
+    [SerializeField] private float targetDriftAngle;
+    [Tooltip("The range above and below targetDriftAngle that turning inputs will range within while drifting.")]
     [SerializeField] private float driftAngleRange;
     [Tooltip("The angle to skew the model while drifting.")]
     [SerializeField] private float driftModelSkewAngle;
@@ -55,6 +61,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("The speed at which the player model approaches the drift angle in degrees/s^2.")]
     [SerializeField] private float maxSkewChange;
 
+    [Header("Gravity")]
+    [Tooltip("The acceleration due to gravity.")]
+    [SerializeField] private float gravityAccel;
+    [Tooltip("The distance to check below the player for ground.")]
+    [SerializeField] private float groundCheckDistance;
+
     // Input
     private PlayerInput input;  // The PlayerInput attached to this GameObject
     private Vector2 lookInput;  // The current look input
@@ -62,11 +74,15 @@ public class PlayerMovement : MonoBehaviour
     private float turnInput;    // The current input value for turning
 
     // Motion
-    private CharacterController controller;     // The CharacterController that handles player movement
+    private Vector3 previousPosition;           // The position of the player last frame
+    private Rigidbody rb;                       // The rigidbody that handles player movement
+    private CapsuleCollider coll;               // The player collider
     private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
     private float velocity;                     // The current forward velocity
+    private float verticalVelocity;             // The current vertical velocity
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
+    private bool isGrounded;                    // Whether the player is on the ground or not
 
     // Camera
     private Quaternion headStartAngle;  // The head bone's starting angle
@@ -76,7 +92,8 @@ public class PlayerMovement : MonoBehaviour
     {
         // Assign our components
         input = GetComponent<PlayerInput>();
-        controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
+        coll = GetComponent<CapsuleCollider>();
 
         // Get the initial head rotation
         headStartAngle = head.rotation;
@@ -131,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else    // If we are drifting
         {
-            float driftAngle = (maxTurnAngle + driftAngleRange) * (int)driftState;                  // Calculate the center of the angle range
+            float driftAngle = targetDriftAngle * (int)driftState;                                  // Calculate the center of the angle range
             angleRange = new Vector2(driftAngle - driftAngleRange, driftAngle + driftAngleRange);   // The angle range is a narrow range beyond the max turn angle
         }
 
@@ -141,11 +158,47 @@ public class PlayerMovement : MonoBehaviour
 
         // Turn towards ideal angle
         turnAngle = Mathf.MoveTowards(turnAngle, idealTurnAngle, maxTurnChange * Time.fixedDeltaTime);      // Apply the turn input to the turn angle
-        transform.Rotate(0, turnAngle * Time.fixedDeltaTime, 0);                                            // Rotate the player around the Y-axis
+            
+        // --------------------
+        // --- GROUND CHECK ---
+        // --------------------
 
-        // Move the player
-        controller.Move(transform.forward * velocity * Time.fixedDeltaTime);
-        
+        RaycastHit hit; 
+        Vector3 capsuleCenter = transform.position + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
+        Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                         // The vector from the center to one of the capsule points
+        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
+                               capsuleCenter + capsuleHalfHeight,
+                               coll.radius,
+                               Vector3.down,
+                               out hit,
+                               groundCheckDistance * 2,
+                               LayerMask.GetMask("Environment"))
+           && Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit)   // If we're on the ground
+        {
+            isGrounded = true;          // Set grounded to true
+            verticalVelocity = 0;       // Set our vertical velocity to 0
+            rb.MovePosition(Vector3.down * hit.distance);
+        }
+        else    // If we're not on the ground
+        {
+            if(isGrounded)  // If we just left the ground this frame
+            {
+                verticalVelocity = (transform.position - previousPosition).y / Time.fixedDeltaTime;    // Set our velocity to the actual current velocity
+                isGrounded = false;                                                                    // Set grounded to false
+            }
+
+            verticalVelocity -= gravityAccel * Time.fixedDeltaTime;  // Apply gravity
+        }
+
+        // ----------------------
+        // --- PERFORM MOTION ---
+        // ----------------------
+                            
+        rb.MoveRotation(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * transform.rotation);  // Rotate the player around the Y-axis
+
+        previousPosition = transform.position;                                                          // Store the previous position
+        Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity);          // Calculate total velocity
+        rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);                                          // Apply movement
             
         // ----------------------
         // --- MODEL ROTATION ---
@@ -206,24 +259,22 @@ public class PlayerMovement : MonoBehaviour
         float driftInput = context.ReadValue<float>();  // Read the input value
         if(driftState == DriftState.None)               // If not currently drifting
         {
-            if(driftInput > 0)                          // If drift input is active
+            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)  // If drift is pressed and a turn input is pressed
             {
-                if(Mathf.Abs(turnInput) > 0)            // If the player is turning, set the drift state based on turn direction
-                {
-                    driftState = (DriftState)Mathf.Sign(turnInput);
-                }
-                else                                    // If the player is not turning, set the drift state based on look direction
-                {
-                    driftState = (DriftState)Mathf.Sign(lookAngle.x + 0.000001f);
-                }
+                driftState = (DriftState)Mathf.Sign(turnInput);
             }
         }
-        else                        // If currently drifting
+        else    // If currently drifting
         {
             if(driftInput == 0)     // If drift input is released, stop drifting
             {
                 driftState = DriftState.None;
             }
         }
+    }
+
+    void OnCollisionEnter(Collision other) 
+    {
+        Debug.Log(other.contacts[0].point);
     }
 }
