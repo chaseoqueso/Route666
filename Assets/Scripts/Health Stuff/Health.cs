@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] private int maxHealth = 1;
+    [SerializeField] protected int maxHealth = 1;
     public int currentHealth {get; private set;}
 
     void Start()
@@ -12,31 +12,22 @@ public class Health : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    public void SetCurrentHealth(int newCurrentHealth)
-    {
-        currentHealth = newCurrentHealth;
-    }
-
-    public void SetMaxHealth(int newMaxHealth)
-    {
-        maxHealth = newMaxHealth;
-    }
-
     public int GetMaxHealth()
     {
         return maxHealth;
     }
 
-    public void TakeDamage(int damageValue)
+    public virtual void SetMaxHealth(int newMaxHealth)
     {
-        currentHealth -= damageValue;
-
-        if(currentHealth <= 0){
-            // Do death stuff
-        }
+        maxHealth = newMaxHealth;
     }
 
-    public void Heal(int healValue)
+    public virtual void TakeDamage(int damageValue)
+    {
+        currentHealth -= damageValue;
+    }
+
+    public virtual void Heal(int healValue)
     {
         currentHealth += healValue;
 

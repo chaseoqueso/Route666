@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private Health health;
+    [SerializeField] private PlayerHealth health;
     
     public int gunAttackValue = 1;
     public int motorcycleImpactDamage = 1;

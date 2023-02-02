@@ -15,8 +15,10 @@ public class GameManager : MonoBehaviour
         public const string LEVEL_1_SCENE_NAME = "Level1";
     #endregion
 
-    [HideInInspector] public Player player;
+    public Player player;
     public string horseName {get; private set;}
+
+    public GameUIManager UIManager;
 
     [HideInInspector] public int ruckusPoints;
     public int maxRuckusMeter;

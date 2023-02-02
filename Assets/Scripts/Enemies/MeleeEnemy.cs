@@ -13,8 +13,6 @@ public class MeleeEnemy : Enemy
 
     public void MeleeAttack()
     {
-        Debug.Log("attacking the player!");
-
         // TODO: Play attack animation!
 
         // TODO: If it hits, do the following

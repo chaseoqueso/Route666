@@ -107,8 +107,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8855367933392588841}
-  - component: {fileID: 8855367933392588840}
   - component: {fileID: 8855367933392588847}
+  - component: {fileID: 4664313687614681975}
   - component: {fileID: 8855367933392588846}
   - component: {fileID: 8855367933392588844}
   - component: {fileID: 8855367933392588845}
@@ -136,19 +136,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8855367933392588840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8855367933392588843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d46f979d3e64a438dfc1400b226be0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 1
 --- !u!114 &8855367933392588847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,9 +149,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPathing: {fileID: 8855367933392588845}
-  health: {fileID: 8855367933392588840}
+  health: {fileID: 4664313687614681975}
   attackValue: 1
   damageOnImpact: 1
+--- !u!114 &4664313687614681975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8855367933392588843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d38737922bbca6f4387e8c6d1dbca413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1
 --- !u!135 &8855367933392588846
 SphereCollider:
   m_ObjectHideFlags: 0
