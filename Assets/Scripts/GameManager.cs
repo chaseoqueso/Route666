@@ -15,7 +15,11 @@ public class GameManager : MonoBehaviour
         public const string LEVEL_1_SCENE_NAME = "Level1";
     #endregion
 
+    [HideInInspector] public Player player;
     public string horseName {get; private set;}
+
+    [HideInInspector] public int ruckusPoints;
+    public int maxRuckusMeter;
 
     public string currentScene {get; private set;}
 
@@ -27,6 +31,8 @@ public class GameManager : MonoBehaviour
         else{
             instance = this;
         }
+        DontDestroyOnLoad(this.gameObject);
+
         currentScene = SceneManager.GetActiveScene().name;
     }
 
