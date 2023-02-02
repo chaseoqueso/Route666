@@ -62,6 +62,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""25f75018-4eec-47ad-9e98-1eea6b90d7b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -218,6 +227,28 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Drift"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""899d98a0-d9c7-4af4-a681-050352f03cfd"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""36fa0f41-6b39-409a-b3bb-ff7ab84f6c09"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -258,6 +289,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Default_Drive = m_Default.FindAction("Drive", throwIfNotFound: true);
         m_Default_Turn = m_Default.FindAction("Turn", throwIfNotFound: true);
         m_Default_Drift = m_Default.FindAction("Drift", throwIfNotFound: true);
+        m_Default_Pause = m_Default.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -321,6 +353,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Drive;
     private readonly InputAction m_Default_Turn;
     private readonly InputAction m_Default_Drift;
+    private readonly InputAction m_Default_Pause;
     public struct DefaultActions
     {
         private @PlayerControls m_Wrapper;
@@ -329,6 +362,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Drive => m_Wrapper.m_Default_Drive;
         public InputAction @Turn => m_Wrapper.m_Default_Turn;
         public InputAction @Drift => m_Wrapper.m_Default_Drift;
+        public InputAction @Pause => m_Wrapper.m_Default_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -350,6 +384,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Drift.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
                 @Drift.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
                 @Drift.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
+                @Pause.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -366,6 +403,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Drift.started += instance.OnDrift;
                 @Drift.performed += instance.OnDrift;
                 @Drift.canceled += instance.OnDrift;
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
             }
         }
     }
@@ -394,5 +434,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnDrive(InputAction.CallbackContext context);
         void OnTurn(InputAction.CallbackContext context);
         void OnDrift(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }
