@@ -17,9 +17,17 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("References")]
     [Tooltip("The root object of the player model.")]
-    [SerializeField] private GameObject model;
-    [Tooltip("The CinemachineFreeLook script driving the camera.")]
-    [SerializeField] private CinemachineFreeLook freeLook;
+    [SerializeField] private Transform model;
+    [Tooltip("The head bone of the player.")]
+    [SerializeField] private Transform head;
+
+    [Header("Camera")]
+    [Tooltip("The maximum horizontal viewing angles.")]
+    [SerializeField] private Vector2 maxXLook;
+    [Tooltip("The maximum vertical viewing angles.")]
+    [SerializeField] private Vector2 maxYLook;
+    [Tooltip("The camera sensitivity.")]
+    public float lookSensitivity = 1;
 
     [Header("Acceleration")]
     [Tooltip("The rate of acceleration in units/s^2.")]
@@ -49,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Input
     private PlayerInput input;  // The PlayerInput attached to this GameObject
+    private Vector2 lookInput;  // The current look input
     private float driveInput;   // The current input value for accelerating or braking
     private float turnInput;    // The current input value for turning
 
@@ -59,11 +68,32 @@ public class PlayerMovement : MonoBehaviour
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
 
-    void Start()
+    // Camera
+    private Quaternion headStartAngle;  // The head bone's starting angle
+    private Vector2 lookAngle;          // The current look angle
+
+    void Awake()
     {
         // Assign our components
         input = GetComponent<PlayerInput>();
         controller = GetComponent<CharacterController>();
+
+        // Get the initial head rotation
+        headStartAngle = head.rotation;
+    }
+
+    // We do camera stuff in LateUpdate because that's after input is read
+    private void LateUpdate() 
+    {
+        lookAngle += lookInput * lookSensitivity;  // Apply the look delta
+
+        // Clamp the angle to the appropriate range
+        lookAngle.x = Mathf.Clamp(lookAngle.x, maxXLook.x + driftSkewAngle, maxXLook.y + driftSkewAngle);
+        lookAngle.y = Mathf.Clamp(lookAngle.y, maxYLook.x, maxYLook.y);
+
+        head.rotation = Quaternion.LookRotation(transform.forward, model.up) *
+                        Quaternion.Euler(-lookAngle.y, lookAngle.x, 0) * 
+                        headStartAngle; // Apply the look rotation
     }
 
     // We do our physics in FixedUpdate because Unity likes that
@@ -122,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
         // ----------------------
 
         // Lean the model around the Z-axis
-        float leanAngle = turnAngle/maxTurnAngle * -maxLeanAngle;                           // Calculate the angle to lean the player model
+        float leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
         Quaternion leanRotation = Quaternion.AngleAxis(leanAngle, Vector3.forward);         // Set the lean rotation
 
         // Skew the model if drifting
@@ -130,24 +160,34 @@ public class PlayerMovement : MonoBehaviour
         if(driftState != DriftState.None)   // If drifting
         {
             float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
-            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);  // The angle range to skew the model
-            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, normalizedTurnInput);                   // Get the desired skew angle based on the skew angle range
+            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);                      // The angle range to skew the model
+            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle));  // Get the desired skew angle based on the skew angle range
         }
         else    // If not drifting
         {
             idealSkewAngle = 0;
         }
+        float previousSkewAngle = driftSkewAngle;   // Record the previous angle
         driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.fixedDeltaTime);    // Move the drift angle toward the ideal
         Quaternion skewRotation = Quaternion.AngleAxis(driftSkewAngle, Vector3.up);                                 // Set the skew rotation
 
+        // Adjust the camera
+        lookAngle.x += (driftSkewAngle - previousSkewAngle) / 2; // Add a portion of the skew angle to the look angle
+
         // Set the model rotation
-        model.transform.localRotation = skewRotation * leanRotation;
+        model.localRotation = skewRotation * leanRotation;
     } 
+
+    // This gets called whenever there is a change in the input for the Drive action
+    public void OnLook(CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
 
     // This gets called whenever there is a change in the input for the Drive action
     public void OnDrive(CallbackContext context)
     {
-        driveInput = context.ReadValue<float>();
+        driveInput = Mathf.Sign(context.ReadValue<float>());
     }
 
     // This gets called whenever there is a change in the input for the Turn action
@@ -174,7 +214,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else                                    // If the player is not turning, set the drift state based on look direction
                 {
-                    driftState = (DriftState)Mathf.Sign(freeLook.m_XAxis.Value + 0.000001f);
+                    driftState = (DriftState)Mathf.Sign(lookAngle.x + 0.000001f);
                 }
             }
         }
@@ -185,7 +225,5 @@ public class PlayerMovement : MonoBehaviour
                 driftState = DriftState.None;
             }
         }
-
-        Debug.Log(driftState);
     }
 }
