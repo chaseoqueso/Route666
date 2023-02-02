@@ -227,10 +227,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnPause(InputValue input)
+    public void OnPause(CallbackContext context)
     {
-        Debug.Log("on pause called");
-
         if(PauseMenu.gameIsPaused){
             GameManager.instance.UIManager.pauseMenu.ResumeGame();
         }
