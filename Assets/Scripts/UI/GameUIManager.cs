@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameUIManager : MonoBehaviour
 {
     public PlayerHealthUITracker healthUI;
+    public PauseMenu pauseMenu;
 
     void Awake()
     {

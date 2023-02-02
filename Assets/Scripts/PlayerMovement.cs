@@ -226,4 +226,16 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    public void OnPause(InputValue input)
+    {
+        Debug.Log("on pause called");
+
+        if(PauseMenu.gameIsPaused){
+            GameManager.instance.UIManager.pauseMenu.ResumeGame();
+        }
+        else{
+            GameManager.instance.UIManager.pauseMenu.PauseGame();
+        }        
+    }
 }
