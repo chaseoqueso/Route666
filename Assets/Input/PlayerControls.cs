@@ -71,6 +71,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Value"",
+                    ""id"": ""01294512-2a31-4cd1-af6d-6584be37f139"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -249,6 +258,28 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""24d1f05d-cee8-4a3f-9c01-1e6bb68df22a"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05e8009c-60ee-4d3c-ae08-2c7ef762fb1c"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -290,6 +321,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Default_Turn = m_Default.FindAction("Turn", throwIfNotFound: true);
         m_Default_Drift = m_Default.FindAction("Drift", throwIfNotFound: true);
         m_Default_Pause = m_Default.FindAction("Pause", throwIfNotFound: true);
+        m_Default_Fire = m_Default.FindAction("Fire", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -354,6 +386,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Turn;
     private readonly InputAction m_Default_Drift;
     private readonly InputAction m_Default_Pause;
+    private readonly InputAction m_Default_Fire;
     public struct DefaultActions
     {
         private @PlayerControls m_Wrapper;
@@ -363,6 +396,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Turn => m_Wrapper.m_Default_Turn;
         public InputAction @Drift => m_Wrapper.m_Default_Drift;
         public InputAction @Pause => m_Wrapper.m_Default_Pause;
+        public InputAction @Fire => m_Wrapper.m_Default_Fire;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -387,6 +421,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Pause.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
                 @Pause.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
                 @Pause.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
+                @Fire.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnFire;
+                @Fire.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnFire;
+                @Fire.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnFire;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -406,6 +443,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Pause.started += instance.OnPause;
                 @Pause.performed += instance.OnPause;
                 @Pause.canceled += instance.OnPause;
+                @Fire.started += instance.OnFire;
+                @Fire.performed += instance.OnFire;
+                @Fire.canceled += instance.OnFire;
             }
         }
     }
@@ -435,5 +475,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnTurn(InputAction.CallbackContext context);
         void OnDrift(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnFire(InputAction.CallbackContext context);
     }
 }

@@ -24,7 +24,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 91413
+  controlID: 93478
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -141,7 +141,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 91414
+  controlID: 93454
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -166,7 +166,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 91415
+  controlID: 93455
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -226,7 +226,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 28cffcff2ccffcff7ccffcff80cffcff9ccffcffa0cffcffaacffcffb4cffcffb6cffcff16d2fcffd4d4fcff7efdfdff82fdfdffd2fdfdffd6fdfdffdefdfdffe2fdfdffeafdfdffeefdfdfff2fdfdfffcfdfdff00fefdff0afefdff0cfefdff8412ffff8812ffff8c12ffff9012ffff9812ffffa012ffffa412ffffac12ffffb012ffffb812ffffbc12ffffc412ffffc812ffffd012ffffd412ffffd812ffffdc12ffffe012ffffe412ffffe812ffffec12fffff412ffff0013ffff0813ffff1613ffff2013ffff2213ffff80faffff8cfaffffd4faffffdcfaffffe0faffffe8faffffecfafffff4fafffff8fafffffcfaffff00fbffff06fbffff0afbffff14fbffff16fbffffbe630000d6f90000302b0100
+      m_ExpandedIDs: 8ae3fbff28cffcff2ccffcff7ccffcff80cffcff9ccffcffa0cffcffaacffcffb4cffcffb6cffcff16d2fcffd4d4fcff7efdfdff82fdfdffd2fdfdffd6fdfdffdefdfdffe2fdfdffeafdfdffeefdfdfff2fdfdfffcfdfdff00fefdff0afefdff0cfefdff8412ffff8812ffff8c12ffff9012ffff9812ffffa012ffffa412ffffac12ffffb012ffffb812ffffbc12ffffc412ffffc812ffffd012ffffd412ffffd812ffffdc12ffffe012ffffe412ffffe812ffffec12fffff412ffff0013ffff0813ffff1613ffff2013ffff2213ffff80faffff8cfaffffd4faffffdcfaffffe0faffffe8faffffecfafffff4fafffff8fafffffcfaffff00fbffff06fbffff0afbffff14fbffff16fbffffbe630000d6f90000302b0100
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -269,15 +269,15 @@ MonoBehaviour:
     y: 0
     width: 1586
     height: 918
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 2}
   m_Panes:
   - {fileID: 8}
   - {fileID: 2}
   - {fileID: 9}
   m_Selected: 1
-  m_LastSelected: 0
+  m_LastSelected: 2
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -679,9 +679,9 @@ MonoBehaviour:
     m_SearchString: 
   m_ActionsTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 755914da
-    m_LastClickedID: -636200587
-    m_ExpandedIDs: 716e1bab9d12dbb3755914daa141acf6be2ad433b4a81d6b73590475
+    m_SelectedIDs: 32356cf0
+    m_LastClickedID: -261343950
+    m_ExpandedIDs: 716e1bab9d12dbb3755914da32356cf0a141acf6be2ad433b4a81d6b73590475
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -718,8 +718,8 @@ MonoBehaviour:
         selectedIndex: -1
         scroll: {x: 0, y: 0}
       - itemId: 1275948795
-        selectedIndex: 9
-        scroll: {x: 0, y: 63.5}
+        selectedIndex: 24
+        scroll: {x: 0, y: 303.5}
       - itemId: -1184068216
         selectedIndex: -1
         scroll: {x: 0, y: 0}
@@ -748,12 +748,18 @@ MonoBehaviour:
         selectedIndex: -1
         scroll: {x: 0, y: 0}
       - itemId: 403810634
-        selectedIndex: 1
+        selectedIndex: 0
         scroll: {x: 0, y: 0}
       - itemId: -1966209459
         selectedIndex: -1
         scroll: {x: 0, y: 0}
       - itemId: -877025531
+        selectedIndex: -1
+        scroll: {x: 0, y: 0}
+      - itemId: -206068285
+        selectedIndex: -1
+        scroll: {x: 0, y: 0}
+      - itemId: -298396491
         selectedIndex: -1
         scroll: {x: 0, y: 0}
     m_ManualPathEditMode: 0
@@ -780,6 +786,14 @@ MonoBehaviour:
       \"Button\",\n                    \"id\": \"185f945e-4878-464b-a14c-da1739ba1a7a\",\n                   
       \"expectedControlType\": \"Button\",\n                    \"processors\": \"\",\n                   
       \"interactions\": \"\",\n                    \"initialStateCheck\": false\n               
+      },\n                {\n                    \"name\": \"Pause\",\n                   
+      \"type\": \"Button\",\n                    \"id\": \"25f75018-4eec-47ad-9e98-1eea6b90d7b8\",\n                   
+      \"expectedControlType\": \"Button\",\n                    \"processors\": \"\",\n                   
+      \"interactions\": \"\",\n                    \"initialStateCheck\": false\n               
+      },\n                {\n                    \"name\": \"Fire\",\n                   
+      \"type\": \"Value\",\n                    \"id\": \"01294512-2a31-4cd1-af6d-6584be37f139\",\n                   
+      \"expectedControlType\": \"Button\",\n                    \"processors\": \"\",\n                   
+      \"interactions\": \"\",\n                    \"initialStateCheck\": true\n               
       }\n            ],\n            \"bindings\": [\n                {\n                   
       \"name\": \"\",\n                    \"id\": \"2dfe6ddd-057d-4710-b901-d75d359d6d96\",\n                   
       \"path\": \"<Mouse>/delta\",\n                    \"interactions\": \"\",\n                   
@@ -854,10 +868,30 @@ MonoBehaviour:
       \"<Gamepad>/leftTrigger\",\n                    \"interactions\": \"\",\n                   
       \"processors\": \"\",\n                    \"groups\": \"Gamepad\",\n                   
       \"action\": \"Drift\",\n                    \"isComposite\": false,\n                   
-      \"isPartOfComposite\": false\n                }\n            ]\n        }\n   
-      ],\n    \"controlSchemes\": [\n        {\n            \"name\": \"Keyboard\",\n           
-      \"bindingGroup\": \"Keyboard\",\n            \"devices\": [\n               
-      {\n                    \"devicePath\": \"<Keyboard>\",\n                   
+      \"isPartOfComposite\": false\n                },\n                {\n                   
+      \"name\": \"\",\n                    \"id\": \"899d98a0-d9c7-4af4-a681-050352f03cfd\",\n                   
+      \"path\": \"<Keyboard>/escape\",\n                    \"interactions\": \"\",\n                   
+      \"processors\": \"\",\n                    \"groups\": \"Keyboard\",\n                   
+      \"action\": \"Pause\",\n                    \"isComposite\": false,\n                   
+      \"isPartOfComposite\": false\n                },\n                {\n                   
+      \"name\": \"\",\n                    \"id\": \"36fa0f41-6b39-409a-b3bb-ff7ab84f6c09\",\n                   
+      \"path\": \"<Gamepad>/start\",\n                    \"interactions\": \"\",\n                   
+      \"processors\": \"\",\n                    \"groups\": \"Gamepad\",\n                   
+      \"action\": \"Pause\",\n                    \"isComposite\": false,\n                   
+      \"isPartOfComposite\": false\n                },\n                {\n                   
+      \"name\": \"\",\n                    \"id\": \"24d1f05d-cee8-4a3f-9c01-1e6bb68df22a\",\n                   
+      \"path\": \"<Mouse>/leftButton\",\n                    \"interactions\": \"\",\n                   
+      \"processors\": \"\",\n                    \"groups\": \"Keyboard\",\n                   
+      \"action\": \"Fire\",\n                    \"isComposite\": false,\n                   
+      \"isPartOfComposite\": false\n                },\n                {\n                   
+      \"name\": \"\",\n                    \"id\": \"05e8009c-60ee-4d3c-ae08-2c7ef762fb1c\",\n                   
+      \"path\": \"<Gamepad>/rightTrigger\",\n                    \"interactions\":
+      \"\",\n                    \"processors\": \"\",\n                    \"groups\":
+      \"Gamepad\",\n                    \"action\": \"Fire\",\n                   
+      \"isComposite\": false,\n                    \"isPartOfComposite\": false\n               
+      }\n            ]\n        }\n    ],\n    \"controlSchemes\": [\n        {\n           
+      \"name\": \"Keyboard\",\n            \"bindingGroup\": \"Keyboard\",\n           
+      \"devices\": [\n                {\n                    \"devicePath\": \"<Keyboard>\",\n                   
       \"isOptional\": false,\n                    \"isOR\": false\n               
       },\n                {\n                    \"devicePath\": \"<Mouse>\",\n                   
       \"isOptional\": false,\n                    \"isOR\": false\n               
@@ -917,7 +951,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 91368
+  controlID: 93419
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -937,8 +971,8 @@ MonoBehaviour:
     y: 0
     width: 1208
     height: 389
-  m_MinSize: {x: 230, y: 250}
-  m_MaxSize: {x: 10000, y: 10000}
+  m_MinSize: {x: 231, y: 271}
+  m_MaxSize: {x: 10001, y: 10021}
   m_ActualView: {fileID: 12}
   m_Panes:
   - {fileID: 12}
@@ -985,21 +1019,21 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes
+    - Assets/Scripts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scenes
+  - Assets/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Github\Route666
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 12680000
-    m_LastClickedID: 26642
+    m_SelectedIDs: 14680000
+    m_LastClickedID: 26644
     m_ExpandedIDs: 00000000e2670000e467000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1053,8 +1087,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: aacffcff
-    m_LastClickedInstanceID: -208982
+    m_SelectedInstanceIDs: 88e3fbff
+    m_LastClickedInstanceID: -269432
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
@@ -1157,8 +1191,8 @@ MonoBehaviour:
     y: 0
     width: 507
     height: 1307
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}
@@ -1198,7 +1232,7 @@ MonoBehaviour:
     m_CachedPref: 160
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
-  m_LastInspectedObjectInstanceID: -208982
+  m_LastInspectedObjectInstanceID: -269432
   m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0

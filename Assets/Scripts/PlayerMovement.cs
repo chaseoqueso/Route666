@@ -282,6 +282,26 @@ public class PlayerMovement : MonoBehaviour
             GameManager.instance.UIManager.pauseMenu.PauseGame();
         }        
     }
+
+    public void OnFire(CallbackContext context)
+    {
+        if(context.ReadValue<float>() > 0)
+        {
+            RaycastHit hit;
+            if(Physics.Raycast(Camera.main.transform.position,
+                               Camera.main.transform.forward,
+                               out hit,
+                               100))
+            {
+                IShootable shootScript = hit.transform.GetComponent<IShootable>();
+                if(shootScript != null)
+                {
+                    shootScript.OnShoot();
+                }
+                    Debug.Log(hit.point);
+            }
+        }
+    }
     
     void OnCollisionEnter(Collision other) 
     {
