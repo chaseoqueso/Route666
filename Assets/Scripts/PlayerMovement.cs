@@ -273,6 +273,16 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void OnPause(CallbackContext context)
+    {
+        if(PauseMenu.gameIsPaused){
+            GameManager.instance.UIManager.pauseMenu.ResumeGame();
+        }
+        else{
+            GameManager.instance.UIManager.pauseMenu.PauseGame();
+        }        
+    }
+    
     void OnCollisionEnter(Collision other) 
     {
         Debug.Log(other.contacts[0].point);
