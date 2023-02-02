@@ -30,8 +30,10 @@ public class PlayerMovement : MonoBehaviour
     public float lookSensitivity = 1;
 
     [Header("Controller")]
-    [Tooltip("The highest slope the player can climb in degrees.")]
+    [Tooltip("The highest slope in degrees the player can climb.")]
     [SerializeField] private float slopeLimit;
+    [Tooltip("The sharpest angle in degrees the player can hit a wall before losing speed.")]
+    [SerializeField] private float wallLimit;
 
     [Header("Acceleration")]
     [Tooltip("The rate of acceleration in units/s^2.")]
@@ -130,9 +132,13 @@ public class PlayerMovement : MonoBehaviour
         else
             accel = brakeStrength;
 
-        // Apply acceleration
-        velocity += driveInput * accel * Time.fixedDeltaTime;                // Accelerate or decelerate based on player input
-        velocity -= (velocity / maxVelocity) * accel * Time.fixedDeltaTime;  // Decelerate according to drag
+        // If we're on the ground
+        if(isGrounded)
+        {
+            velocity += driveInput * accel * Time.fixedDeltaTime;                // Accelerate or decelerate based on player input
+            velocity -= (velocity / maxVelocity) * accel * Time.fixedDeltaTime;  // Decelerate according to drag
+        }
+
         if(velocity < acceleration * 0.5f * Time.fixedDeltaTime)             // If velocity would be negative or very small, set velocity to 0
             velocity = 0;
             
@@ -175,9 +181,12 @@ public class PlayerMovement : MonoBehaviour
                                LayerMask.GetMask("Environment"))
            && Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit)   // If we're on the ground
         {
-            isGrounded = true;          // Set grounded to true
-            verticalVelocity = 0;       // Set our vertical velocity to 0
-            rb.MovePosition(Vector3.down * hit.distance);
+            if(!isGrounded)
+            {
+                isGrounded = true;          // Set grounded to true
+                verticalVelocity = 0;       // Set our vertical velocity to 0
+            }
+            rb.MovePosition(transform.position + Vector3.down * hit.distance + Vector3.up * groundCheckDistance/2);   // Stick the player to the ground
         }
         else    // If we're not on the ground
         {
@@ -198,7 +207,22 @@ public class PlayerMovement : MonoBehaviour
 
         previousPosition = transform.position;                                                          // Store the previous position
         Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity);          // Calculate total velocity
-        rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);                                          // Apply movement
+
+        // Check for collision
+        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
+                               capsuleCenter + capsuleHalfHeight,
+                               coll.radius,
+                               moveVector,
+                               out hit,
+                               moveVector.magnitude * Time.fixedDeltaTime,
+                               LayerMask.GetMask("Environment")))   // If we hit something
+        {
+            OnCollision(moveVector, hit);   // Handle the collision
+        }
+        else
+        {
+            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime); // Apply movement
+        }
             
         // ----------------------
         // --- MODEL ROTATION ---
@@ -231,7 +255,49 @@ public class PlayerMovement : MonoBehaviour
         model.localRotation = skewRotation * leanRotation;
     } 
 
-    // This gets called whenever there is a change in the input for the Drive action
+    private void OnCollision(Vector3 movement, RaycastHit hit)
+    {
+        // Split movement into vertical and horizontal
+        Vector3 verMovement = Vector3.Project(movement, Vector3.up);
+        Vector3 horMovement = Vector3.ProjectOnPlane(movement, Vector3.up);
+        Vector3 newMovement;
+
+        // If we're on the ground
+        if(isGrounded)
+        {
+            // If the collision was with ground
+            if(Vector3.Angle(Vector3.up, hit.normal) < slopeLimit)
+            {
+                Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, hit.normal);
+                newMovement = Quaternion.AngleAxis(Vector3.Angle(movement, projectedMovement), Vector3.Cross(movement, projectedMovement)) * movement;
+            }
+            else
+            {
+                // If the horizontal angle of the collision is within the bounce limit
+                if(90 - Vector3.Angle(horMovement, -hit.normal) < wallLimit)
+                {
+                    horMovement = Vector3.Reflect(horMovement, hit.normal);     // Reflect the horizontal movement
+                }
+                else    // If the horizontal angle of the collision is too sharp
+                {
+                    horMovement += Vector3.Reflect(horMovement, hit.normal);    // Reduce speed by the reflection vector
+                    turnAngle = 0;
+                }
+                newMovement = horMovement + verMovement;
+            }
+        }
+        else
+        {
+            newMovement = Vector3.Reflect(movement, hit.normal);     // Reflect the movement
+        }
+
+        rb.MoveRotation(Quaternion.LookRotation(horMovement, Vector3.up));      // Update the player's angle
+        rb.MovePosition(transform.position + newMovement * Time.deltaTime);     // Apply motion
+        velocity = Vector3.ProjectOnPlane(newMovement, Vector3.up).magnitude;   // Update internal velocity to match
+        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;  // Update internal velocity to match
+    }
+
+    // This gets called whenever there is a change in the input for the Look action
     public void OnLook(CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
@@ -240,7 +306,12 @@ public class PlayerMovement : MonoBehaviour
     // This gets called whenever there is a change in the input for the Drive action
     public void OnDrive(CallbackContext context)
     {
-        driveInput = Mathf.Sign(context.ReadValue<float>());
+        // If drive input is not zero, set it to 1 or -1 based on its sign
+        driveInput = context.ReadValue<float>();
+        if(driveInput != 0)
+        {
+            driveInput = Mathf.Sign(context.ReadValue<float>());
+        }
     }
 
     // This gets called whenever there is a change in the input for the Turn action
@@ -283,28 +354,25 @@ public class PlayerMovement : MonoBehaviour
         }        
     }
 
+    // This gets called whenever there is a change in the input for the Fire action
     public void OnFire(CallbackContext context)
     {
+        // If the fire button was pressed
         if(context.ReadValue<float>() > 0)
         {
+            // Send a raycast out from the camera in the direction the player is looking
             RaycastHit hit;
             if(Physics.Raycast(Camera.main.transform.position,
                                Camera.main.transform.forward,
                                out hit,
-                               100))
+                               100))                                                // If something was hit
             {
-                IShootable shootScript = hit.transform.GetComponent<IShootable>();
-                if(shootScript != null)
+                IShootable shootScript = hit.transform.GetComponent<IShootable>();  // Try to get an IShootable component
+                if(shootScript != null)                                             // If one was found
                 {
-                    shootScript.OnShoot();
+                    shootScript.OnShoot();                                          // Call the shoot function
                 }
-                    Debug.Log(hit.point);
             }
         }
-    }
-    
-    void OnCollisionEnter(Collision other) 
-    {
-        Debug.Log(other.contacts[0].point);
     }
 }

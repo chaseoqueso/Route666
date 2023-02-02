@@ -117,9 +117,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
-                    ""id"": ""f695c4c5-4b84-4f75-b6a6-32824fb4eaca"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""name"": ""Positive"",
+                    ""id"": ""6078bf8a-f00a-4335-8ad6-03037da66295"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -128,9 +128,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
-                    ""id"": ""6078bf8a-f00a-4335-8ad6-03037da66295"",
-                    ""path"": ""<Keyboard>/w"",
+                    ""name"": ""Negative"",
+                    ""id"": ""f695c4c5-4b84-4f75-b6a6-32824fb4eaca"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
