@@ -32,7 +32,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""a61e054a-e59c-49ea-b496-b8ab112f4831"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=0.1,y=0.1)"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
@@ -41,7 +41,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""b74b3da9-2b45-4c0b-9988-b116e88c2a5e"",
                     ""expectedControlType"": ""Axis"",
-                    ""processors"": ""Normalize(min=-1,max=1)"",
+                    ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
@@ -53,6 +53,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Drift"",
+                    ""type"": ""Button"",
+                    ""id"": ""185f945e-4878-464b-a14c-da1739ba1a7a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -72,7 +81,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""id"": ""5400909b-6874-4c28-a0a8-0851ec2b5dd8"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=4,y=4)"",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
@@ -123,6 +132,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": """",
+                    ""id"": ""f0064195-6eaf-41f8-bed5-1e3af1ad5ced"",
+                    ""path"": ""<Gamepad>/dpad/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
                     ""name"": ""1D Axis"",
                     ""id"": ""447f8881-0c6a-4bf7-a4fa-30e860fe9308"",
                     ""path"": ""1DAxis"",
@@ -165,6 +185,39 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Turn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2d4b474e-6546-43ef-b6ce-39220d2f4a63"",
+                    ""path"": ""<Gamepad>/dpad/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Turn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a314a973-849b-459b-83cc-37b01c443055"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Drift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5fe81b59-700f-44e6-9a27-e0e28acc33b9"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Drift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -204,6 +257,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Default_Look = m_Default.FindAction("Look", throwIfNotFound: true);
         m_Default_Drive = m_Default.FindAction("Drive", throwIfNotFound: true);
         m_Default_Turn = m_Default.FindAction("Turn", throwIfNotFound: true);
+        m_Default_Drift = m_Default.FindAction("Drift", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -266,6 +320,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Look;
     private readonly InputAction m_Default_Drive;
     private readonly InputAction m_Default_Turn;
+    private readonly InputAction m_Default_Drift;
     public struct DefaultActions
     {
         private @PlayerControls m_Wrapper;
@@ -273,6 +328,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Default_Look;
         public InputAction @Drive => m_Wrapper.m_Default_Drive;
         public InputAction @Turn => m_Wrapper.m_Default_Turn;
+        public InputAction @Drift => m_Wrapper.m_Default_Drift;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -291,6 +347,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Turn.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnTurn;
                 @Turn.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnTurn;
                 @Turn.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnTurn;
+                @Drift.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
+                @Drift.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
+                @Drift.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -304,6 +363,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Turn.started += instance.OnTurn;
                 @Turn.performed += instance.OnTurn;
                 @Turn.canceled += instance.OnTurn;
+                @Drift.started += instance.OnDrift;
+                @Drift.performed += instance.OnDrift;
+                @Drift.canceled += instance.OnDrift;
             }
         }
     }
@@ -331,5 +393,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnDrive(InputAction.CallbackContext context);
         void OnTurn(InputAction.CallbackContext context);
+        void OnDrift(InputAction.CallbackContext context);
     }
 }
