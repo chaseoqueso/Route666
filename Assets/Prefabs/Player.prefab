@@ -189,14 +189,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7182887997262108590}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.3489, z: 0.368}
+  m_LocalRotation: {x: 0.55468065, y: -0.4385544, z: -0.5546787, w: -0.43855572}
+  m_LocalPosition: {x: -0.1054, y: 0.175, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9203775667772627137}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 9203775666957318349}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -100, y: 90, z: 0}
 --- !u!1 &9203775667136961480
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,13 +262,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dc6ba7395daf23418ecc7a5bde45328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: {fileID: 9203775667772627136}
+  model: {fileID: 9203775667772627137}
+  head: {fileID: 9203775666957318349}
+  maxXLook: {x: -60, y: 60}
+  maxYLook: {x: -45, y: 45}
+  lookSensitivity: 1
   acceleration: 15
   brakeStrength: 10
   maxVelocity: 20
-  maxTurnAngle: 100
+  maxTurnAngle: 90
   maxTurnChange: 270
-  maxLeanAngle: 10
+  maxLeanAngle: 15
+  driftAngleRange: 20
+  driftModelSkewAngle: 50
+  driftModelSkewRange: 10
+  maxSkewChange: 250
 --- !u!114 &9203775667639781846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,7 +303,19 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3147893761818561444}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnLook
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: a61e054a-e59c-49ea-b496-b8ab112f4831
     m_ActionName: Default/Look[/Mouse/delta]
   - m_PersistentCalls:
@@ -330,6 +350,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 2e9b72ea-eb52-4219-acf8-1a2d650f83ea
     m_ActionName: Default/Turn[/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3147893761818561444}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnDrift
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 185f945e-4878-464b-a14c-da1739ba1a7a
+    m_ActionName: Default/Drift[/Keyboard/leftShift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Default
@@ -365,7 +401,6 @@ Transform:
   m_Children:
   - {fileID: 9203775666957224293}
   - {fileID: 4272502957183938306}
-  - {fileID: 572631753119477759}
   m_Father: {fileID: 9203775667136961481}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1463,5 +1498,10 @@ PrefabInstance:
 --- !u!4 &9203775666957224293 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 413848, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
+  m_PrefabInstance: {fileID: 9203775666956851709}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9203775666957318349 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 467248, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
   m_PrefabInstance: {fileID: 9203775666956851709}
   m_PrefabAsset: {fileID: 0}
