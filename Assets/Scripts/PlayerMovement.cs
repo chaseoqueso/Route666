@@ -34,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slopeLimit;
     [Tooltip("The sharpest angle in degrees the player can hit a wall before losing speed.")]
     [SerializeField] private float wallLimit;
+    [Tooltip("The speed in degrees/s at which the model tracks the designated rotation.")]
+    [SerializeField] private float modelTrackingSpeed;
 
     [Header("Acceleration")]
     [Tooltip("The rate of acceleration in units/s^2.")]
@@ -42,6 +44,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float brakeStrength;
     [Tooltip("The maximum achievable velocity.")]
     [SerializeField] private float maxVelocity;
+    [Tooltip("The velocity threshold beyond which is considered high velocity for gameplay purposes.")]
+    [SerializeField] private float highVelocity;
 
     [Header("Turning")]
     [Tooltip("The maximum change of direction in degrees/s.")]
@@ -77,6 +81,8 @@ public class PlayerMovement : MonoBehaviour
 
     // Motion
     private Vector3 previousPosition;           // The position of the player last frame
+    private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
+    private Vector2 angleRange;                 // The range of angles the player can turn within
     private Rigidbody rb;                       // The rigidbody that handles player movement
     private CapsuleCollider coll;               // The player collider
     private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
@@ -103,16 +109,50 @@ public class PlayerMovement : MonoBehaviour
 
     // We do camera stuff in LateUpdate because that's after input is read
     private void LateUpdate() 
-    {
+    { 
+        // --------------
+        // --- CAMERA ---
+        // --------------
+
         lookAngle += lookInput * lookSensitivity;  // Apply the look delta
 
         // Clamp the angle to the appropriate range
-        lookAngle.x = Mathf.Clamp(lookAngle.x, maxXLook.x + driftSkewAngle, maxXLook.y + driftSkewAngle);
+        lookAngle.x = Mathf.Clamp(lookAngle.x, maxXLook.x, maxXLook.y);
         lookAngle.y = Mathf.Clamp(lookAngle.y, maxYLook.x, maxYLook.y);
 
-        head.rotation = Quaternion.LookRotation(transform.forward, model.up) *
+        head.rotation = Quaternion.LookRotation(model.forward, model.up) *
                         Quaternion.Euler(-lookAngle.y, lookAngle.x, 0) * 
-                        headStartAngle; // Apply the look rotation
+                        headStartAngle;                                         // Apply the look rotation
+            
+        // ----------------------
+        // --- MODEL ROTATION ---
+        // ----------------------
+
+        // Lean the model around the Z-axis
+        float leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
+        Quaternion leanRotation = Quaternion.AngleAxis(leanAngle, Vector3.forward);         // Set the lean rotation
+
+        // Skew the model if drifting
+        float idealSkewAngle;
+        if(driftState != DriftState.None)   // If drifting
+        {
+            float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
+            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);                      // The angle range to skew the model
+            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle));  // Get the desired skew angle based on the skew angle range
+        }
+        else    // If not drifting
+        {
+            idealSkewAngle = 0;
+        }
+        float previousSkewAngle = driftSkewAngle;   // Record the previous angle
+        driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.deltaTime);         // Move the drift angle toward the ideal
+        Quaternion skewRotation = Quaternion.AngleAxis(driftSkewAngle, Vector3.up);                                 // Set the skew rotation
+
+        // Adjust the camera
+        lookAngle.x -= (driftSkewAngle - previousSkewAngle) / 2; // Subtract a portion of the skew angle from the look angle to maintain look direction
+
+        // Set the model rotation
+        model.localRotation = Quaternion.RotateTowards(model.localRotation, skewRotation * leanRotation, modelTrackingSpeed * Time.deltaTime);
     }
 
     // We do our physics in FixedUpdate because Unity likes that
@@ -147,7 +187,6 @@ public class PlayerMovement : MonoBehaviour
         // ---------------
 
         // Calculate the min and max angle the player can turn
-        Vector2 angleRange;
         if(driftState == DriftState.None)   // If we aren't currently drifting
         {
             angleRange = new Vector2(-maxTurnAngle, maxTurnAngle);      // The angle range is the full turn range
@@ -205,8 +244,8 @@ public class PlayerMovement : MonoBehaviour
                             
         rb.MoveRotation(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * transform.rotation);  // Rotate the player around the Y-axis
 
-        previousPosition = transform.position;                                                          // Store the previous position
-        Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity);          // Calculate total velocity
+        previousPosition = transform.position;                                                                  // Store the previous position
+        Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity) + pushVelocity;   // Calculate total velocity
 
         // Check for collision
         if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
@@ -221,38 +260,18 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime); // Apply movement
+            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);    // Apply movement
+
+            // If pushVelocity is nearly zero
+            if(pushVelocity.magnitude < Time.fixedDeltaTime)
+            {
+                pushVelocity = Vector3.zero;    // Remove it
+            }
+            else    // Otherwise
+            {
+                pushVelocity = pushVelocity.normalized * (pushVelocity.magnitude - acceleration * Time.fixedDeltaTime);    // Reduce pushVelocity strength
+            }
         }
-            
-        // ----------------------
-        // --- MODEL ROTATION ---
-        // ----------------------
-
-        // Lean the model around the Z-axis
-        float leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
-        Quaternion leanRotation = Quaternion.AngleAxis(leanAngle, Vector3.forward);         // Set the lean rotation
-
-        // Skew the model if drifting
-        float idealSkewAngle;
-        if(driftState != DriftState.None)   // If drifting
-        {
-            float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
-            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);                      // The angle range to skew the model
-            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle));  // Get the desired skew angle based on the skew angle range
-        }
-        else    // If not drifting
-        {
-            idealSkewAngle = 0;
-        }
-        float previousSkewAngle = driftSkewAngle;   // Record the previous angle
-        driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.fixedDeltaTime);    // Move the drift angle toward the ideal
-        Quaternion skewRotation = Quaternion.AngleAxis(driftSkewAngle, Vector3.up);                                 // Set the skew rotation
-
-        // Adjust the camera
-        lookAngle.x += (driftSkewAngle - previousSkewAngle) / 2; // Add a portion of the skew angle to the look angle
-
-        // Set the model rotation
-        model.localRotation = skewRotation * leanRotation;
     } 
 
     private void OnCollision(Vector3 movement, RaycastHit hit)
@@ -262,39 +281,89 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horMovement = Vector3.ProjectOnPlane(movement, Vector3.up);
         Vector3 newMovement;
 
-        // If we're on the ground
-        if(isGrounded)
+        
+        // If the collision was with ground
+        if(Vector3.Angle(Vector3.up, hit.normal) < slopeLimit)
         {
-            // If the collision was with ground
-            if(Vector3.Angle(Vector3.up, hit.normal) < slopeLimit)
+            Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, hit.normal);   // Get the movement vector along the ground plane
+
+            // If we were already on the ground
+            if(isGrounded)
             {
-                Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, hit.normal);
-                newMovement = Quaternion.AngleAxis(Vector3.Angle(movement, projectedMovement), Vector3.Cross(movement, projectedMovement)) * movement;
+                newMovement = Quaternion.FromToRotation(movement, projectedMovement) * movement;    // Rotate our movement vector to align with the new ground normal
             }
-            else
+            else // If we weren't on the ground
             {
+                newMovement = projectedMovement;    // Remove any excess vertical velocity
+            }
+        }
+        else    // If the collision was with a wall
+        {
+            pushVelocity = Vector3.zero;    // If there was a pushVelocity, remove it
+            
+            // If we're on the ground
+            if(isGrounded)
+            {
+                Vector3 wallVector = Vector3.ProjectOnPlane(horMovement, hit.normal);    // Get the movement vector along the wall
+
                 // If the horizontal angle of the collision is within the bounce limit
-                if(90 - Vector3.Angle(horMovement, -hit.normal) < wallLimit)
+                if(Vector3.Angle(horMovement, -hit.normal) > 90 - wallLimit)
                 {
-                    horMovement = Vector3.Reflect(horMovement, hit.normal);     // Reflect the horizontal movement
+                    newMovement = wallVector;   // Set movement to the movement vector along the wall
+
+                    // If the turn angle would put us toward the wall next frame, eliminate the turn angle
+                    if(Vector3.Dot(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * newMovement, hit.normal) < 0)
+                    {
+                        turnAngle = 0;
+                    }
                 }
                 else    // If the horizontal angle of the collision is too sharp
                 {
-                    horMovement += Vector3.Reflect(horMovement, hit.normal);    // Reduce speed by the reflection vector
-                    turnAngle = 0;
+                    if(velocity > highVelocity)     // If the player's going fast
+                    {
+                        pushVelocity = Vector3.ProjectOnPlane(hit.normal, Vector3.up) * horMovement.magnitude;      // Add a bounce velocity away from the wall
+                        newMovement = horMovement/2;                                                                // Reduce horizontal velocity
+                        newMovement += Vector3.up * 2;                                                              // Add a little hop
+                    }
+                    else                            // If the player's going slower
+                    {
+                        pushVelocity = Vector3.ProjectOnPlane(hit.normal, Vector3.up) * horMovement.magnitude;      // Add a smaller bounce velocity away from the wall
+                        newMovement = (horMovement + wallVector).normalized * horMovement.magnitude/2;              // Set the velocity more along the wall
+                    }
                 }
-                newMovement = horMovement + verMovement;
+
+                newMovement += verMovement;     // Combine with vertical movement
+            }
+            else    // If we're in midair
+            {
+                newMovement = Vector3.Reflect(movement, hit.normal);     // Reflect the movement
             }
         }
-        else
-        {
-            newMovement = Vector3.Reflect(movement, hit.normal);     // Reflect the movement
-        }
+        
+        Vector3 newHorMovement = Vector3.ProjectOnPlane(newMovement, Vector3.up);   // Isolate the horizontal motion
 
-        rb.MoveRotation(Quaternion.LookRotation(horMovement, Vector3.up));      // Update the player's angle
-        rb.MovePosition(transform.position + newMovement * Time.deltaTime);     // Apply motion
-        velocity = Vector3.ProjectOnPlane(newMovement, Vector3.up).magnitude;   // Update internal velocity to match
-        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;  // Update internal velocity to match
+        rb.MovePosition(transform.position + newMovement * Time.fixedDeltaTime);    // Apply motion
+        velocity = newHorMovement.magnitude;                                        // Update internal velocity to match
+        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;      // Update internal velocity to match
+
+        if(newHorMovement.magnitude > 0)
+        {
+            Quaternion rotation = Quaternion.LookRotation(newHorMovement, Vector3.up);              // Calculate the rotation
+            rb.MoveRotation(rotation);                                                              // Update the player's angle
+
+            // Lock the model's rotation for one physics frame
+            IEnumerator revertModelRotation()
+            {
+                Quaternion previousRotation = model.rotation;
+                float time = Time.time;
+                while(Time.time < time + Time.fixedDeltaTime)
+                {
+                    yield return new WaitForEndOfFrame();
+                    model.rotation = previousRotation;
+                }
+            }
+            StartCoroutine(revertModelRotation()); 
+        }
     }
 
     // This gets called whenever there is a change in the input for the Look action

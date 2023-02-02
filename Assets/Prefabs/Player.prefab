@@ -281,9 +281,12 @@ MonoBehaviour:
   maxYLook: {x: -45, y: 45}
   lookSensitivity: 1
   slopeLimit: 45
+  wallLimit: 30
+  modelTrackingSpeed: 150
   acceleration: 15
   brakeStrength: 10
   maxVelocity: 20
+  highVelocity: 0
   maxTurnAngle: 90
   maxTurnChange: 270
   maxLeanAngle: 15
