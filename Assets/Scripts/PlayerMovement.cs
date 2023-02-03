@@ -78,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 lookInput;  // The current look input
     private float driveInput;   // The current input value for accelerating or braking
     private float turnInput;    // The current input value for turning
+    private float driftInput;   // The current input value for accelerating or braking
 
     // Motion
     private Vector3 previousPosition;           // The position of the player last frame
@@ -406,7 +407,11 @@ public class PlayerMovement : MonoBehaviour
     // This gets called whenever there is a change in the input for the Turn action
     public void OnTurn(CallbackContext context)
     {
-        turnInput = context.ReadValue<float>();
+        turnInput = context.ReadValue<float>();     // Read the input value
+        if(driftState == DriftState.None && driftInput > 0 && Mathf.Abs(turnInput) > 0) // If drift is pressed and a turn input is pressed but not yet drifting
+        {
+            driftState = (DriftState)Mathf.Sign(turnInput);                             // Drift in the turn direction
+        }
     }
 
     // This gets called whenever there is a change in the input for the Drift action
@@ -416,12 +421,12 @@ public class PlayerMovement : MonoBehaviour
         // --- DRIFTING ---
         // ----------------
 
-        float driftInput = context.ReadValue<float>();  // Read the input value
+        driftInput = context.ReadValue<float>();        // Read the input value
         if(driftState == DriftState.None)               // If not currently drifting
         {
-            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)  // If drift is pressed and a turn input is pressed
+            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)          // If drift is pressed and a turn input is pressed
             {
-                driftState = (DriftState)Mathf.Sign(turnInput);
+                driftState = (DriftState)Mathf.Sign(turnInput);     // Drift in the turn direction
             }
         }
         else    // If currently drifting
