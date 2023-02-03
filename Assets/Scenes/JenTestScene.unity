@@ -1009,12 +1009,12 @@ GameObject:
   - component: {fileID: 670499477}
   - component: {fileID: 670499476}
   - component: {fileID: 670499475}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &670499471
 Transform:
@@ -1365,7 +1365,7 @@ GameObject:
   - component: {fileID: 1046559478}
   - component: {fileID: 1046559477}
   - component: {fileID: 1046559480}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1681,7 +1681,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1130366415}
   - component: {fileID: 1130366416}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1778,7 +1778,7 @@ GameObject:
   - component: {fileID: 1224052961}
   - component: {fileID: 1224052960}
   - component: {fileID: 1224052963}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1970,7 +1970,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1624188946}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Environment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2091,7 +2091,7 @@ GameObject:
   - component: {fileID: 1681812582}
   - component: {fileID: 1681812581}
   - component: {fileID: 1681812584}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2478,7 +2478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8855367933392588841, guid: bee1b690fe81cff4d8b1b76581fbfd22, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.28
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8855367933392588841, guid: bee1b690fe81cff4d8b1b76581fbfd22, type: 3}
       propertyPath: m_LocalPosition.z

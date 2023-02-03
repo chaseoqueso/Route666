@@ -26,14 +26,24 @@ public class GameUIManager : MonoBehaviour
     }
 
     #region Ruckus Meter
-        public void IncreaseRuckusPoints()
+        public void IncreaseRuckusMeter(int value)
         {
-
+            ruckusMeter.value += value;
         }
 
-        public void DecreaseRuckusOverTime()
+        public void SetRuckusMeter(int value)
         {
-
+            ruckusMeter.value = value;
         }
+
+        public void DecreaseRuckusMeter(int value)
+        {
+            ruckusMeter.value -= value;
+        }
+
+        // public void RuckusDecay()
+        // {
+
+        // }
     #endregion
 }

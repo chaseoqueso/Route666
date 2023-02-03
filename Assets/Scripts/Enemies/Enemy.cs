@@ -20,13 +20,13 @@ public class Enemy : MonoBehaviour, IShootable
     void OnCollisionEnter(Collision collision)
     {
         if(damageOnImpact && collision.gameObject.tag == "Player"){
-            TakeDamage(GameManager.instance.player.motorcycleImpactDamage);
+            TakeDamage(GameManager.instance.player.motorcycleImpactDamage, KillType.collisionKill);
         }
     }
 
     public void OnShoot()
     {
-        TakeDamage(GameManager.instance.player.gunDamage);
+        TakeDamage(GameManager.instance.player.gunDamage, KillType.normalGunKill);
     }
 
     #region Health Stuff
@@ -40,12 +40,14 @@ public class Enemy : MonoBehaviour, IShootable
             maxHealth = newMaxHealth;
         }
 
-        public virtual void TakeDamage(int damageValue)
+        public virtual void TakeDamage(int damageValue, KillType killType)
         {
             currentHealth -= damageValue;
 
             if(currentHealth <= 0){
                 // TODO: Do death stuff
+
+                Debug.Log("you killed someone!");
 
                 Destroy(gameObject);
             }
