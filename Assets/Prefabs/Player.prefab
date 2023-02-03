@@ -210,9 +210,10 @@ GameObject:
   - component: {fileID: 7089970461859175430}
   - component: {fileID: 3147893761818561444}
   - component: {fileID: 9203775667639781846}
-  m_Layer: 0
+  - component: {fileID: 7700980075762380027}
+  m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -282,11 +283,11 @@ MonoBehaviour:
   lookSensitivity: 1
   slopeLimit: 45
   wallLimit: 30
-  modelTrackingSpeed: 150
-  acceleration: 15
-  brakeStrength: 10
-  maxVelocity: 20
-  highVelocity: 0
+  modelTrackingSpeed: 180
+  acceleration: 14
+  brakeStrength: 8
+  maxVelocity: 16
+  highVelocity: 12
   maxTurnAngle: 90
   maxTurnChange: 270
   maxLeanAngle: 15
@@ -411,6 +412,21 @@ MonoBehaviour:
   m_DefaultActionMap: Default
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &7700980075762380027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9203775667136961480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a9c5b411a636144489abdb9136e624a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  gunDamage: 1
+  motorcycleImpactDamage: 1
 --- !u!1 &9203775667772627136
 GameObject:
   m_ObjectHideFlags: 0
