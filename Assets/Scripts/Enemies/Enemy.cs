@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour, IShootable
             currentHealth -= damageValue;
 
             if(currentHealth <= 0){
-                // TODO: Do death stuff
+                GameManager.instance.enemySpawnManager.UpdatePopOnEnemyDeath();
 
                 GameManager.instance.IncreaseRuckusValue(killType);
 

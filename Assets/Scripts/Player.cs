@@ -66,4 +66,20 @@ public class Player : MonoBehaviour
             }
         }
     #endregion
+
+    #region Spawner Activation
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.tag == "EnemySpawner"){
+                GameManager.instance.enemySpawnManager.enemySpawnerStatusDatabase[other.GetComponent<EnemySpawner>()] = true;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if(other.tag == "EnemySpawner"){
+                GameManager.instance.enemySpawnManager.enemySpawnerStatusDatabase[other.GetComponent<EnemySpawner>()] = false;
+            }
+        }
+    #endregion
 }

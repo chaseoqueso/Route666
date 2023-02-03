@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
 
     public string currentScene {get; private set;}
 
+    public EnemySpawnManager enemySpawnManager;
+
     void Awake()
     {
         if( instance ){
@@ -58,6 +60,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
 
         currentScene = SceneManager.GetActiveScene().name;
+
+        // TODO: Uncomment this later
+        // ToggleEnemySpawnManagerStatus();
 
         ruckusPoints = 0;
         maxRuckusMeter = 250;
@@ -77,13 +82,35 @@ public class GameManager : MonoBehaviour
         horseName = input;
     }
 
-    public void ChangeScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-        currentScene = sceneName;
+    #region Scene Management
+        public void ChangeScene(string sceneName)
+        {
+            SceneManager.LoadScene(sceneName);
+            currentScene = sceneName;
 
-        ruckusDecayRoutine = null;
-    }
+            ruckusDecayRoutine = null;
+
+            ToggleEnemySpawnManagerStatus();
+        }
+
+        public bool CurrentSceneIsALevel()
+        {
+            if(currentScene == LEVEL_1_SCENE_NAME){
+                return true;
+            }
+            return false;
+        }
+
+        public void ToggleEnemySpawnManagerStatus()
+        {
+            if(CurrentSceneIsALevel()){
+                enemySpawnManager.enabled = true;
+            }
+            else{
+                enemySpawnManager.enabled = false;            
+            }
+        }
+    #endregion
 
     #region Ruckus Management
         public void IncreaseRuckusValue(KillType killType)
