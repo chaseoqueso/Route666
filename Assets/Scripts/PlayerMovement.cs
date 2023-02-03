@@ -32,6 +32,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Controller")]
     [Tooltip("The highest slope in degrees the player can climb.")]
     [SerializeField] private float slopeLimit;
+    [Tooltip("The highest size step the player can climb.")]
+    [SerializeField] private float stepHeight;
     [Tooltip("The sharpest angle in degrees the player can hit a wall before losing speed.")]
     [SerializeField] private float wallLimit;
     [Tooltip("The speed in degrees/s at which the model tracks the designated rotation.")]
@@ -92,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
     private bool isGrounded;                    // Whether the player is on the ground or not
+    private bool justStepped;                   // Whether the player just moved up a step
 
     // Camera
     private Quaternion headStartAngle;  // The head bone's starting angle
@@ -222,24 +225,51 @@ public class PlayerMovement : MonoBehaviour
         // --- GROUND CHECK ---
         // --------------------
 
+        // CapsuleCast downward using the player collider
         RaycastHit hit; 
         Vector3 capsuleCenter = transform.position + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
         Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                         // The vector from the center to one of the capsule points
+
+        float checkDistance = groundCheckDistance * 2;          // Set default check distance
+        if(justStepped)                                         // If the player just hit a step
+        {
+            checkDistance = stepHeight + groundCheckDistance;   // Set the check distance to be larger
+            justStepped = false;
+        }
+
         if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
                                capsuleCenter + capsuleHalfHeight,
                                coll.radius,
                                Vector3.down,
                                out hit,
-                               groundCheckDistance * 2,
+                               checkDistance,
                                LayerMask.GetMask("Environment"))
-           && Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit)   // If we're on the ground
+           && (Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit || hit.point.y - transform.position.y <= stepHeight))   // If we're on a ground surface
         {
-            if(!isGrounded)
+            // Raycast from center of collider
+            RaycastHit downHit;
+            float groundDistance = coll.radius/Mathf.Cos(slopeLimit) - coll.radius;    // Trig to find theoretical ground based on slope
+            if(Physics.Raycast(transform.position + Vector3.up * groundCheckDistance,
+                               Vector3.down,
+                               out downHit,
+                               groundDistance + checkDistance,
+                               LayerMask.GetMask("Environment"))
+               && (Vector3.Angle(downHit.normal, Vector3.up) <= slopeLimit || downHit.point.y - transform.position.y <= stepHeight))    // If the center of the collider is above ground
             {
-                isGrounded = true;          // Set grounded to true
-                verticalVelocity = 0;       // Set our vertical velocity to 0
+                if(!isGrounded)
+                {
+                    isGrounded = true;          // Set grounded to true
+                    verticalVelocity = 0;       // Set our vertical velocity to 0
+                }
+                rb.MovePosition(transform.position + Vector3.down * hit.distance + Vector3.up * groundCheckDistance/2);     // Stick the player to the ground
             }
-            rb.MovePosition(transform.position + Vector3.down * hit.distance + Vector3.up * groundCheckDistance/2);   // Stick the player to the ground
+
+            // RaycastHit straightHit;
+            // Physics.Raycast(hit.point + hit.normal * groundCheckDistance,
+            //                 -hit.normal,
+            //                 out straightHit,
+            //                 groundCheckDistance * 2,
+            //                 LayerMask.GetMask("Environment"));
         }
         else    // If we're not on the ground
         {
@@ -250,6 +280,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             verticalVelocity -= gravityAccel * Time.fixedDeltaTime;  // Apply gravity
+            Debug.Log("Jump");
         }
 
         // ----------------------
@@ -296,11 +327,30 @@ public class PlayerMovement : MonoBehaviour
         // Split movement into vertical and horizontal
         Vector3 verMovement = Vector3.Project(movement, Vector3.up);
         Vector3 horMovement = Vector3.ProjectOnPlane(movement, Vector3.up);
+        Vector3 stepVector = Vector3.zero;
         Vector3 newMovement;
 
-        
-        // If the collision was with ground
-        if(Vector3.Angle(Vector3.up, hit.normal) < slopeLimit)
+        // Try a normal raycast at the same location
+        RaycastHit secondHit;
+        if(!Physics.Raycast(hit.point + hit.normal * groundCheckDistance,
+                           -hit.normal,
+                           out secondHit,
+                           groundCheckDistance * 2))
+        {
+            // If it didn't hit anything, something is very wrong
+            Debug.LogError("A secondary raycast attempt failed. This should not be possible.");
+            return;
+        }
+
+        // If the hit was at a corner within step height
+        if(secondHit.normal != hit.normal && hit.point.y - transform.position.y <= stepHeight)
+        {
+            newMovement = movement;                                             // Keep the movement vector the same
+            stepVector = Vector3.up * (hit.point.y - transform.position.y);     // Move up to accomodate
+            justStepped = true;                                                 // Record that we just stepped
+            Debug.Log("Step");
+        }
+        else if(secondHit.normal == hit.normal && Vector3.Angle(Vector3.up, hit.normal) < slopeLimit) // If the collision was with ground
         {
             Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, hit.normal);   // Get the movement vector along the ground plane
 
@@ -359,7 +409,7 @@ public class PlayerMovement : MonoBehaviour
         
         Vector3 newHorMovement = Vector3.ProjectOnPlane(newMovement, Vector3.up);   // Isolate the horizontal motion
 
-        rb.MovePosition(transform.position + newMovement * Time.fixedDeltaTime);    // Apply motion
+        rb.MovePosition(transform.position + stepVector + newMovement * Time.fixedDeltaTime);    // Apply motion
         velocity = newHorMovement.magnitude;                                        // Update internal velocity to match
         verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;      // Update internal velocity to match
 
