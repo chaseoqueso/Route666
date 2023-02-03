@@ -84,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Motion
     private Vector3 previousPosition;           // The position of the player last frame
+    private Vector3 groundNormal;               // The normal vector of the ground last frame
     private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
     private Vector2 angleRange;                 // The range of angles the player can turn within
     private Rigidbody rb;                       // The rigidbody that handles player movement
@@ -109,6 +110,9 @@ public class PlayerMovement : MonoBehaviour
 
         // Get the initial head rotation
         headStartAngle = head.rotation;
+
+        // Set the initial ground normal
+        groundNormal = Vector3.up;
     }
 
     // We do camera stuff in LateUpdate because that's after input is read
@@ -225,63 +229,39 @@ public class PlayerMovement : MonoBehaviour
         // --- GROUND CHECK ---
         // --------------------
 
+        Vector3 capsulePoint = transform.position + Vector3.up * (coll.radius + groundCheckDistance);   // The center point of the capsule's lower sphere
+        Vector3 groundStickVector = Vector3.zero;
+        
         // CapsuleCast downward using the player collider
         RaycastHit hit; 
-        Vector3 capsuleCenter = transform.position + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
-        Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                         // The vector from the center to one of the capsule points
-
-        float checkDistance = groundCheckDistance * 2;          // Set default check distance
-        if(justStepped)                                         // If the player just hit a step
+        RaycastHit downHit;
+        if(Physics.SphereCast(capsulePoint, coll.radius, -groundNormal, out hit, stepHeight + groundCheckDistance, LayerMask.GetMask("Environment"))                // If the spherecast hit
+           && Physics.Raycast(transform.position + groundNormal * groundCheckDistance, -groundNormal, out downHit, stepHeight, LayerMask.GetMask("Environment"))    // And the center of the collider hit
+           && (Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit || Vector3.Angle(downHit.normal, Vector3.up) <= slopeLimit)                                      // And we're on a ground surface
+           && (hit.distance < groundCheckDistance || isGrounded))                                                                                                   // And the hit distance is valid
         {
-            checkDistance = stepHeight + groundCheckDistance;   // Set the check distance to be larger
-            justStepped = false;
-        }
-
-        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
-                               capsuleCenter + capsuleHalfHeight,
-                               coll.radius,
-                               Vector3.down,
-                               out hit,
-                               checkDistance,
-                               LayerMask.GetMask("Environment"))
-           && (Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit || hit.point.y - transform.position.y <= stepHeight))   // If we're on a ground surface
-        {
-            // Raycast from center of collider
-            RaycastHit downHit;
-            float groundDistance = coll.radius/Mathf.Cos(slopeLimit) - coll.radius;    // Trig to find theoretical ground based on slope
-            if(Physics.Raycast(transform.position + Vector3.up * groundCheckDistance,
-                               Vector3.down,
-                               out downHit,
-                               groundDistance + checkDistance,
-                               LayerMask.GetMask("Environment"))
-               && (Vector3.Angle(downHit.normal, Vector3.up) <= slopeLimit || downHit.point.y - transform.position.y <= stepHeight))    // If the center of the collider is above ground
+            float groundDistance = coll.radius/Mathf.Cos(slopeLimit) - coll.radius;     // Trig to find theoretical ground based on slope
+            if(!isGrounded && hit.distance < groundDistance)                            // If the player isn't grounded but is within ground distance
             {
-                if(!isGrounded)
-                {
-                    isGrounded = true;          // Set grounded to true
-                    verticalVelocity = 0;       // Set our vertical velocity to 0
-                }
-                rb.MovePosition(transform.position + Vector3.down * hit.distance + Vector3.up * groundCheckDistance/2);     // Stick the player to the ground
+                isGrounded = true;          // Set grounded to true
+                verticalVelocity = 0;       // Set our vertical velocity to 0
             }
-
-            // RaycastHit straightHit;
-            // Physics.Raycast(hit.point + hit.normal * groundCheckDistance,
-            //                 -hit.normal,
-            //                 out straightHit,
-            //                 groundCheckDistance * 2,
-            //                 LayerMask.GetMask("Environment"));
+            
+            groundStickVector = -groundNormal * hit.distance + Vector3.up * groundCheckDistance/2;     // Stick the player to the ground
+            groundNormal = downHit.normal;  // Store the groundNormal
         }
         else    // If we're not on the ground
         {
             if(isGrounded)  // If we just left the ground this frame
             {
-                verticalVelocity = (transform.position - previousPosition).y / Time.fixedDeltaTime;    // Set our velocity to the actual current velocity
-                isGrounded = false;                                                                    // Set grounded to false
+                verticalVelocity = (transform.position - previousPosition).y / Time.fixedDeltaTime;     // Set our velocity to the actual current velocity
+                isGrounded = false;                                                                     // Set grounded to false
+                groundNormal = Vector3.up;                                                              // Reset the ground normal
             }
 
             verticalVelocity -= gravityAccel * Time.fixedDeltaTime;  // Apply gravity
-            Debug.Log("Jump");
         }
+        justStepped = false;
 
         // ----------------------
         // --- PERFORM MOTION ---
@@ -296,19 +276,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity) + pushVelocity;   // Calculate total velocity
 
         // Check for collision
-        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
-                               capsuleCenter + capsuleHalfHeight,
-                               coll.radius,
-                               moveVector,
-                               out hit,
-                               moveVector.magnitude * Time.fixedDeltaTime,
-                               LayerMask.GetMask("Environment")))   // If we hit something
+        Vector3 capsuleCenter = transform.position + groundStickVector + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
+        Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                                             // The vector from the center to one of the capsule points
+        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight, capsuleCenter + capsuleHalfHeight, coll.radius,
+                               moveVector, out hit, moveVector.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment")))   // If we hit something
         {
-            OnCollision(moveVector, hit);   // Handle the collision
+            OnCollision(moveVector, groundStickVector, hit);   // Handle the collision
         }
         else
         {
-            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);    // Apply movement
+            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime + groundStickVector);    // Apply movement
 
             // If pushVelocity is nearly zero
             if(pushVelocity.magnitude < Time.fixedDeltaTime)
@@ -322,11 +299,14 @@ public class PlayerMovement : MonoBehaviour
         }
     } 
 
-    private void OnCollision(Vector3 movement, RaycastHit hit)
+    private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit)
     {
+        Vector3 currentPosition = transform.position + groundStick;
+
         // Split movement into vertical and horizontal
-        Vector3 verMovement = Vector3.Project(movement, Vector3.up);
-        Vector3 horMovement = Vector3.ProjectOnPlane(movement, Vector3.up);
+        Vector3 playerMovement = movement - pushVelocity;
+        Vector3 verMovement = Vector3.Project(playerMovement, Vector3.up);
+        Vector3 horMovement = Vector3.ProjectOnPlane(playerMovement, Vector3.up);
         Vector3 stepVector = Vector3.zero;
         Vector3 newMovement;
 
@@ -335,7 +315,8 @@ public class PlayerMovement : MonoBehaviour
         if(!Physics.Raycast(hit.point + hit.normal * groundCheckDistance,
                            -hit.normal,
                            out secondHit,
-                           groundCheckDistance * 2))
+                           groundCheckDistance * 2,
+                           LayerMask.GetMask("Environment")))
         {
             // If it didn't hit anything, something is very wrong
             Debug.LogError("A secondary raycast attempt failed. This should not be possible.");
@@ -343,12 +324,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // If the hit was at a corner within step height
-        if(secondHit.normal != hit.normal && hit.point.y - transform.position.y <= stepHeight)
+        if(secondHit.normal != hit.normal && hit.point.y - currentPosition.y <= stepHeight)
         {
             newMovement = movement;                                             // Keep the movement vector the same
-            stepVector = Vector3.up * (hit.point.y - transform.position.y);     // Move up to accomodate
+            stepVector = Vector3.up * (hit.point.y - currentPosition.y);        // Move up to accomodate
             justStepped = true;                                                 // Record that we just stepped
-            Debug.Log("Step");
         }
         else if(secondHit.normal == hit.normal && Vector3.Angle(Vector3.up, hit.normal) < slopeLimit) // If the collision was with ground
         {
@@ -409,9 +389,9 @@ public class PlayerMovement : MonoBehaviour
         
         Vector3 newHorMovement = Vector3.ProjectOnPlane(newMovement, Vector3.up);   // Isolate the horizontal motion
 
-        rb.MovePosition(transform.position + stepVector + newMovement * Time.fixedDeltaTime);    // Apply motion
-        velocity = newHorMovement.magnitude;                                        // Update internal velocity to match
-        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;      // Update internal velocity to match
+        rb.MovePosition(currentPosition + stepVector + (newMovement + pushVelocity) * Time.fixedDeltaTime);     // Apply motion
+        velocity = newHorMovement.magnitude;                                                                    // Update internal velocity to match
+        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;                                  // Update internal velocity to match
 
         if(newHorMovement.magnitude > 0)
         {
