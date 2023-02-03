@@ -6,7 +6,10 @@ using UnityEngine.UI;
 public class GameUIManager : MonoBehaviour
 {
     public PlayerHealthUITracker healthUI;
+    
     public PauseMenu pauseMenu;
+
+    public Slider ruckusMeter;
 
     void Awake()
     {
@@ -21,4 +24,16 @@ public class GameUIManager : MonoBehaviour
     {
         healthUI.RefillAllHealth();
     }
+
+    #region Ruckus Meter
+        public void IncreaseRuckusPoints()
+        {
+
+        }
+
+        public void DecreaseRuckusOverTime()
+        {
+
+        }
+    #endregion
 }
