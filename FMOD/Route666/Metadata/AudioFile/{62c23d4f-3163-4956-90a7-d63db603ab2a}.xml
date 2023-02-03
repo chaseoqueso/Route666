@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="AudioFile" id="{62c23d4f-3163-4956-90a7-d63db603ab2a}">
+		<property name="assetPath">
+			<value>Route 666.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>46</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2c17ff4e-1366-4352-9258-1dbbde6c3b6c}</destination>
+		</relationship>
+	</object>
+</objects>
