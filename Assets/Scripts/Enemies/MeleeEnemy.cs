@@ -16,6 +16,6 @@ public class MeleeEnemy : Enemy
         // TODO: Play attack animation!
 
         // TODO: If it hits, do the following
-        GameManager.instance.player.GetPlayerHealth().TakeDamage(attackValue);
+        GameManager.instance.player.TakeDamage(attackValue);
     }
 }

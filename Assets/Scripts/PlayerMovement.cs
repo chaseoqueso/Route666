@@ -385,6 +385,10 @@ public class PlayerMovement : MonoBehaviour
     // This gets called whenever there is a change in the input for the Look action
     public void OnLook(CallbackContext context)
     {
+        if(PauseMenu.gameIsPaused){
+            return;
+        }
+
         lookInput = context.ReadValue<Vector2>();
     }
 
