@@ -47,6 +47,8 @@ public class Enemy : MonoBehaviour, IShootable
             if(currentHealth <= 0){
                 // TODO: Do death stuff
 
+                GameManager.instance.IncreaseRuckusValue(killType);
+
                 Debug.Log("you killed someone!");
 
                 Destroy(gameObject);

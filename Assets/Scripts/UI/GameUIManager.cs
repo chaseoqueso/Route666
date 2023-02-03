@@ -23,6 +23,9 @@ public class GameUIManager : MonoBehaviour
     void Start()
     {
         healthUI.RefillAllHealth();
+        
+        ruckusMeter.maxValue = GameManager.instance.maxRuckusMeter;
+        ruckusMeter.value = 0;
     }
 
     #region Ruckus Meter

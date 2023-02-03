@@ -34,14 +34,14 @@ public class GameManager : MonoBehaviour
         public int ruckusPoints {get; private set;}
         public int maxRuckusMeter {get; private set;}
 
-        public int ruckusFromNormalGunKill {get; private set;}
-        public int ruckusFromCollisionKill {get; private set;}
-        public int ruckusDriftKill {get; private set;}
-        public int ruckusFromMidairKill {get; private set;}
-        public int ruckusFromEnvironmentalKill {get; private set;}
+        private int ruckusFromNormalGunKill;
+        private int ruckusFromCollisionKill;
+        private int ruckusDriftKill;
+        private int ruckusFromMidairKill;
+        private int ruckusFromEnvironmentalKill;
 
-        public int ruckusDecayValue {get; private set;}
-        public float ruckusDecayDelay {get; private set;}
+        private int ruckusDecayValue;
+        private float ruckusDecayDelay;
         private Coroutine ruckusDecayRoutine;
     #endregion
 
