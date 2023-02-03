@@ -24,7 +24,7 @@ public class PlayerHealthUITracker : MonoBehaviour
 
     public void RefillAllHealth()
     {
-        int maxHealth = GameManager.instance.player.GetPlayerHealth().GetMaxHealth();
+        int maxHealth = GameManager.instance.player.GetMaxHealth();
 
         if(healthIconList.Count > maxHealth){
             Debug.LogError("Health icon count > max health");

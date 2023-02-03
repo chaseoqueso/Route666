@@ -361,8 +361,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110291708}
-  m_LocalRotation: {x: 0.000000029802319, y: -0.0000001490116, z: 0.00000008940696, w: 1}
-  m_LocalPosition: {x: -0.00000047683716, y: 1.360624, z: 0.11162436}
+  m_LocalRotation: {x: 0, y: -0.00000017881392, z: 0.000000119209275, w: 1}
+  m_LocalPosition: {x: -0.00000047683716, y: 1.360624, z: 0.11162442}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -979,22 +979,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9c5b411a636144489abdb9136e624a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: {fileID: 645893981}
-  gunAttackValue: 1
-  motorcycleImpactDamage: 1
---- !u!114 &645893981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 645893978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a5e64f3af442f45adfe67a623f1ddb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   maxHealth: 3
+  gunDamage: 1
+  motorcycleImpactDamage: 1
 --- !u!114 &645893984 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3147893761818561444, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
@@ -1966,7 +1953,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1412048053}
   m_LocalRotation: {x: -2.9148745e-29, y: -0.000000059604645, z: -1.7374006e-36, w: 1}
-  m_LocalPosition: {x: -0.00000047683716, y: 1.360624, z: 0.11162436}
+  m_LocalPosition: {x: -0.00000047683716, y: 1.360624, z: 0.11162442}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
