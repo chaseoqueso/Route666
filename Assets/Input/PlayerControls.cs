@@ -62,6 +62,24 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""25f75018-4eec-47ad-9e98-1eea6b90d7b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Value"",
+                    ""id"": ""01294512-2a31-4cd1-af6d-6584be37f139"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -90,7 +108,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""1D Axis"",
                     ""id"": ""bc2bf787-0f74-441b-8fdf-5b69097e7f4b"",
-                    ""path"": ""1DAxis(whichSideWins=1)"",
+                    ""path"": ""1DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -99,9 +117,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
-                    ""id"": ""f695c4c5-4b84-4f75-b6a6-32824fb4eaca"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""name"": ""Positive"",
+                    ""id"": ""6078bf8a-f00a-4335-8ad6-03037da66295"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -110,9 +128,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
-                    ""id"": ""6078bf8a-f00a-4335-8ad6-03037da66295"",
-                    ""path"": ""<Keyboard>/w"",
+                    ""name"": ""Negative"",
+                    ""id"": ""f695c4c5-4b84-4f75-b6a6-32824fb4eaca"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -137,7 +155,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/dpad/y"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Drive"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -218,6 +236,50 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Drift"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""899d98a0-d9c7-4af4-a681-050352f03cfd"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""36fa0f41-6b39-409a-b3bb-ff7ab84f6c09"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""24d1f05d-cee8-4a3f-9c01-1e6bb68df22a"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05e8009c-60ee-4d3c-ae08-2c7ef762fb1c"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -258,6 +320,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Default_Drive = m_Default.FindAction("Drive", throwIfNotFound: true);
         m_Default_Turn = m_Default.FindAction("Turn", throwIfNotFound: true);
         m_Default_Drift = m_Default.FindAction("Drift", throwIfNotFound: true);
+        m_Default_Pause = m_Default.FindAction("Pause", throwIfNotFound: true);
+        m_Default_Fire = m_Default.FindAction("Fire", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -321,6 +385,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Drive;
     private readonly InputAction m_Default_Turn;
     private readonly InputAction m_Default_Drift;
+    private readonly InputAction m_Default_Pause;
+    private readonly InputAction m_Default_Fire;
     public struct DefaultActions
     {
         private @PlayerControls m_Wrapper;
@@ -329,6 +395,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Drive => m_Wrapper.m_Default_Drive;
         public InputAction @Turn => m_Wrapper.m_Default_Turn;
         public InputAction @Drift => m_Wrapper.m_Default_Drift;
+        public InputAction @Pause => m_Wrapper.m_Default_Pause;
+        public InputAction @Fire => m_Wrapper.m_Default_Fire;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -350,6 +418,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Drift.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
                 @Drift.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
                 @Drift.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrift;
+                @Pause.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnPause;
+                @Fire.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnFire;
+                @Fire.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnFire;
+                @Fire.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnFire;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -366,6 +440,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Drift.started += instance.OnDrift;
                 @Drift.performed += instance.OnDrift;
                 @Drift.canceled += instance.OnDrift;
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
+                @Fire.started += instance.OnFire;
+                @Fire.performed += instance.OnFire;
+                @Fire.canceled += instance.OnFire;
             }
         }
     }
@@ -394,5 +474,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnDrive(InputAction.CallbackContext context);
         void OnTurn(InputAction.CallbackContext context);
         void OnDrift(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
+        void OnFire(InputAction.CallbackContext context);
     }
 }

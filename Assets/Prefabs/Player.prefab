@@ -189,8 +189,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7182887997262108590}
-  m_LocalRotation: {x: 0.55468065, y: -0.4385544, z: -0.5546787, w: -0.43855572}
-  m_LocalPosition: {x: -0.1054, y: 0.175, z: 0}
+  m_LocalRotation: {x: 0.54233056, y: -0.4537378, z: -0.5423287, w: -0.45373905}
+  m_LocalPosition: {x: -0.09555559, y: 0.18056382, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -206,7 +206,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9203775667136961481}
-  - component: {fileID: 504926751}
+  - component: {fileID: 203030786449488654}
+  - component: {fileID: 7089970461859175430}
   - component: {fileID: 3147893761818561444}
   - component: {fileID: 9203775667639781846}
   m_Layer: 0
@@ -232,8 +233,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &504926751
-CharacterController:
+--- !u!54 &203030786449488654
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9203775667136961480}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 2
+--- !u!136 &7089970461859175430
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -242,13 +259,9 @@ CharacterController:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1.6
   m_Radius: 0.6
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_Height: 1.6
+  m_Direction: 1
   m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &3147893761818561444
 MonoBehaviour:
@@ -267,16 +280,23 @@ MonoBehaviour:
   maxXLook: {x: -60, y: 60}
   maxYLook: {x: -45, y: 45}
   lookSensitivity: 1
+  slopeLimit: 45
+  wallLimit: 30
+  modelTrackingSpeed: 150
   acceleration: 15
   brakeStrength: 10
   maxVelocity: 20
+  highVelocity: 0
   maxTurnAngle: 90
   maxTurnChange: 270
   maxLeanAngle: 15
-  driftAngleRange: 20
+  targetDriftAngle: 70
+  driftAngleRange: 50
   driftModelSkewAngle: 50
   driftModelSkewRange: 10
-  maxSkewChange: 250
+  maxSkewChange: 180
+  gravityAccel: 10
+  groundCheckDistance: 0.05
 --- !u!114 &9203775667639781846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +386,26 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 185f945e-4878-464b-a14c-da1739ba1a7a
     m_ActionName: Default/Drift[/Keyboard/leftShift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 25f75018-4eec-47ad-9e98-1eea6b90d7b8
+    m_ActionName: Default/Pause[/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3147893761818561444}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnFire
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 01294512-2a31-4cd1-af6d-6584be37f139
+    m_ActionName: Default/Fire[/Mouse/leftButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Default
@@ -1315,23 +1355,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 467248, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.94717604
+      value: 0.9379371
       objectReference: {fileID: 0}
     - target: {fileID: 467248, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.00000007619748
+      value: 0.00000010243456
       objectReference: {fileID: 0}
     - target: {fileID: 467248, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000042927333
+      value: 0.000000024153648
       objectReference: {fileID: 0}
     - target: {fileID: 467248, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.32071418
+      value: 0.34680545
       objectReference: {fileID: 0}
     - target: {fileID: 467248, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 37.412
+      value: 40.584
       objectReference: {fileID: 0}
     - target: {fileID: 468216, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       propertyPath: m_LocalPosition.x
