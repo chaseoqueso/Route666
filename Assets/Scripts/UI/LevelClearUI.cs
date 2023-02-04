@@ -10,7 +10,7 @@ public class LevelClearUI : MonoBehaviour
     public void ActivateLevelClearUI()
     {
         Time.timeScale = 0f;
-        Cursor.visible = true;
+        GameManager.instance.UIManager.SetCursorActive(true);
 
         levelClearUI.SetActive(true);
         levelClearUIActive = true;

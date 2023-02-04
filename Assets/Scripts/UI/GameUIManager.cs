@@ -28,6 +28,18 @@ public class GameUIManager : MonoBehaviour
         ruckusMeter.value = 0;
     }
 
+    public void SetCursorActive(bool set)
+    {
+        if(set){
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else{
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
+
     #region Ruckus Meter
         public void IncreaseRuckusMeter(int value)
         {
