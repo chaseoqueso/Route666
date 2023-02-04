@@ -416,7 +416,7 @@ public class PlayerMovement : MonoBehaviour
     // This gets called whenever there is a change in the input for the Look action
     public void OnLook(CallbackContext context)
     {
-        if(PauseMenu.gameIsPaused){
+        if(GameIsPaused()){
             return;
         }
 
@@ -470,12 +470,21 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnPause(CallbackContext context)
     {
+        if(LevelClearUI.levelClearUIActive || DeathScreen.deathUIActive){
+            return;
+        }
+
         if(PauseMenu.gameIsPaused){
             GameManager.instance.UIManager.pauseMenu.ResumeGame();
         }
         else{
             GameManager.instance.UIManager.pauseMenu.PauseGame();
         }        
+    }
+
+    public bool GameIsPaused()
+    {
+        return PauseMenu.gameIsPaused || LevelClearUI.levelClearUIActive || DeathScreen.deathUIActive;
     }
 
     // This gets called whenever there is a change in the input for the Fire action

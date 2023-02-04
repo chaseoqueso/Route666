@@ -38,8 +38,7 @@ public class Player : MonoBehaviour
             currentHealth -= damageValue;
 
             if(currentHealth <= 0){
-                // TODO: Do death stuff
-                Debug.Log("(you died)");
+                GameManager.instance.UIManager.deathUI.ActivateDeathUI();
                 return;
             }
 
