@@ -42,7 +42,9 @@ public class Player : MonoBehaviour
             }
 
             if(currentHealth <= 0){
-                GameManager.instance.UIManager.deathUI.ActivateDeathUI();
+                // TODO: Uncomment this later when it's not horribly inconvenient
+                // GameManager.instance.UIManager.deathUI.ActivateDeathUI();
+                Debug.Log("you're dead (trust me)");
             }
         }
 

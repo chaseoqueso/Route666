@@ -12,6 +12,7 @@ public class GameUIManager : MonoBehaviour
     public DeathScreen deathUI;
 
     public Slider ruckusMeter;
+    public Image ruckusMeterFill;
 
     void Awake()
     {
@@ -30,17 +31,38 @@ public class GameUIManager : MonoBehaviour
     #region Ruckus Meter
         public void IncreaseRuckusMeter(int value)
         {
+            if(ruckusMeter.value == 0 && value > 0){
+                ToggleRuckusFillVis(true);
+            }
+
             ruckusMeter.value += value;
         }
 
         public void SetRuckusMeter(int value)
         {
+            if(ruckusMeter.value == 0 && value > 0){
+                ToggleRuckusFillVis(true);
+            }
+
             ruckusMeter.value = value;
+
+            if(ruckusMeter.value == 0){
+                ToggleRuckusFillVis(false);
+            }
         }
 
         public void DecreaseRuckusMeter(int value)
         {
             ruckusMeter.value -= value;
+
+            if(ruckusMeter.value == 0){
+                ToggleRuckusFillVis(false);
+            }
+        }
+
+        public void ToggleRuckusFillVis( bool set )
+        {
+            ruckusMeterFill.enabled = set;
         }
 
         // public void RuckusDecay()
