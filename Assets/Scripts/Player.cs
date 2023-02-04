@@ -14,14 +14,11 @@ public class Player : MonoBehaviour
     void Awake()
     {
         if(!GameManager.instance){
-            Debug.LogWarning("No Game Manager found in scene!");
+            Debug.LogError("No Game Manager found in scene!");
             return;
         }
         GameManager.instance.player = this;
-    }
 
-    void Start()
-    {
         currentHealth = maxHealth;
     }
 
@@ -63,22 +60,6 @@ public class Player : MonoBehaviour
 
             for(int i = 0; i < healValue; i++){
                 GameManager.instance.UIManager.healthUI.AddHealth();
-            }
-        }
-    #endregion
-
-    #region Spawner Activation
-        private void OnTriggerEnter(Collider other)
-        {
-            if(other.tag == "EnemySpawner"){
-                GameManager.instance.enemySpawnManager.enemySpawnerStatusDatabase[other.GetComponent<EnemySpawner>()] = true;
-            }
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if(other.tag == "EnemySpawner"){
-                GameManager.instance.enemySpawnManager.enemySpawnerStatusDatabase[other.GetComponent<EnemySpawner>()] = false;
             }
         }
     #endregion

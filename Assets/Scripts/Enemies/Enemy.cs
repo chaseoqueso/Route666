@@ -45,12 +45,8 @@ public class Enemy : MonoBehaviour, IShootable
             currentHealth -= damageValue;
 
             if(currentHealth <= 0){
-                GameManager.instance.enemySpawnManager.UpdatePopOnEnemyDeath();
-
+                GameManager.instance.spawnManager.UpdatePopOnEnemyDeath();
                 GameManager.instance.IncreaseRuckusValue(killType);
-
-                Debug.Log("you killed someone!");
-
                 Destroy(gameObject);
             }
         }

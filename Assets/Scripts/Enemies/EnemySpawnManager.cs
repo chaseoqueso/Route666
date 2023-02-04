@@ -10,16 +10,31 @@ public class EnemySpawnManager : MonoBehaviour
     public int totalSpawnedEnemies {get; private set;}     // All ALIVE spawned enemies that exist in the scene right now
     public int totalActiveEnemies {get; private set;}      // All ACTIVE enemies spawned right now
 
-    [HideInInspector] public Dictionary<EnemySpawner,bool> enemySpawnerStatusDatabase = new Dictionary<EnemySpawner,bool>();
+    [HideInInspector] public List<EnemySpawner> enemySpawners = new List<EnemySpawner>();
 
-    void Start()
+    public Transform playerLoc;
+    [Tooltip("The radius within which enemies can spawn")]
+    [SerializeField] private float spawnDistanceFromPlayer = 50f;
+
+    void Awake()
     {
-        if(!GameManager.instance.enemySpawnManager)
-            GameManager.instance.enemySpawnManager = this;
+        if(!GameManager.instance){
+            Debug.LogError("No Game Manager found in scene!");
+            return;
+        }
+        GameManager.instance.spawnManager = this;
+
+        if(!playerLoc){
+            Debug.LogError("No player transform assigned to the Spawn Manager! (Assigning it now but you should put it in in the inspector)");
+            playerLoc = FindObjectOfType<Player>().transform;
+        }
 
         totalSpawnedEnemies = 0;
         totalActiveEnemies = 0;
+    }
 
+    void Start()
+    {
         SpawnEnemies();
     }
 
@@ -37,26 +52,25 @@ public class EnemySpawnManager : MonoBehaviour
     {
         totalSpawnedEnemies++;
         totalActiveEnemies++;
+
+        Debug.Log("current active enemy population: " + totalActiveEnemies);
     }
 
     public void SpawnEnemies()
     {
-        // while(totalActiveEnemies < targetActiveEnemyPopulation){
-            // Spawn more enemies (from a random currently active spawner) to get up to the target
+        List<EnemySpawner> activeSpawners = new List<EnemySpawner>();
+        foreach(EnemySpawner spawner in enemySpawners){
+            
+        }
 
-            // TODO: Pick a random spawner from the dictionary
+        // if(at least one spawner is in range){
+            while(totalActiveEnemies < targetActiveEnemyPopulation){
+                // Spawn more enemies (from a random currently active spawner) to get up to the target
 
-            // TEMP
-            foreach( KeyValuePair<EnemySpawner,bool> spawnerStatus in enemySpawnerStatusDatabase ){
-                // If this spawner is active, spawn the thing (TEMP)
-                if( spawnerStatus.Value ){
-                    spawnerStatus.Key.SpawnEnemy();
-                    break;
-                    // continue;
-                }
+                // TODO: Pick a random spawner w/in range of the player
+
+                enemySpawners[0].SpawnEnemy();
             }
-            // if you get this far, cancel the while loop cuz no spawners are in range? idk
-            // return;
         // }
     }
 }

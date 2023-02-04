@@ -17,11 +17,12 @@ public class SpawnTableEntry{
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private List<SpawnTableEntry> spawnTable = new List<SpawnTableEntry>();
+    [SerializeField] private EnemySpawnManager spawnManager;
 
     // [Tooltip("OPTIONAL timer - if the value here is > 0, it will spawn with a timer and IGNORE the target enemy population instead")]
     // [SerializeField] private float spawnTimer;
 
-    void Awake()
+    void Start()
     {
         // Check for an input error in the spawn table and throw an error if there is one
         if(spawnTable.Count == 0){
@@ -40,21 +41,21 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError("total spawn chance is greater than 100%");
         }
 
-        // TODO: what should starting status be??? how deal with that???
-        // TEMP
-        GameManager.instance.enemySpawnManager.enemySpawnerStatusDatabase[this] = true;
+        if(!spawnManager){
+            Debug.LogError("No spawn manager assigned to an enemy spawner!");
+        }
+
+        spawnManager.enemySpawners.Add(this);
     }
 
     public void SpawnEnemy()
     {
-        Debug.Log("spawning enemy");
-
         // (look at Continuum gear generation)
         // TODO: generate a random number and find the % it matches and spawn that type of enemy
 
         // TEMP
-        Instantiate( spawnTable[0].EnemyPrefab(), new Vector3(0,0,0), Quaternion.identity );
+        Instantiate( spawnTable[0].EnemyPrefab(), gameObject.transform.position, Quaternion.identity );
 
-        GameManager.instance.enemySpawnManager.UpdatePopOnNewSpawn();
+        spawnManager.UpdatePopOnNewSpawn();
     }
 }
