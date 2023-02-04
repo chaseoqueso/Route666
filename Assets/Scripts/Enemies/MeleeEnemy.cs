@@ -4,18 +4,22 @@ using UnityEngine;
 
 public class MeleeEnemy : Enemy
 {
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.tag == "Player"){
-            MeleeAttack();
-        }
-    }
+    [SerializeField] private float attackRange = 4;
 
+    void Start()
+    {
+        // The frame the animation would theoretically hit the player, do stuff
+        GetComponentInChildren<AnimationWatcher>().onAnimationTrigger.AddListener(MeleeAttack);
+    }
+    
     public void MeleeAttack()
     {
-        // TODO: Play attack animation!
+        // Return all colliders it hit
+        Collider[] collision = Physics.OverlapSphere( transform.position + transform.forward * attackRange / 2, attackRange/2, LayerMask.GetMask("Player") );
 
-        // TODO: If it hits, do the following
-        GameManager.instance.player.TakeDamage(attackValue);
+        // There should only be one on the Player layer ever so if length > 0 then it hit
+        if(collision.Length > 0){
+            GameManager.instance.player.TakeDamage(attackValue);
+        }
     }
 }
