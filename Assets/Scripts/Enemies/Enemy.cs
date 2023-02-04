@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour, IShootable
 
     private bool followingPlayer;
 
-    void Start()
+    void Awake()
     {
         currentHealth = maxHealth;
         playerLoc = GameManager.instance.player.transform;

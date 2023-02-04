@@ -42,7 +42,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8855367933392588841}
   - component: {fileID: 8855367933392588847}
-  - component: {fileID: 8855367933392588846}
   - component: {fileID: 8855367933392588844}
   - component: {fileID: 2646825399489575539}
   m_Layer: 0
@@ -83,21 +82,11 @@ MonoBehaviour:
   maxHealth: 1
   attackValue: 1
   damageOnImpact: 1
+  leashDistance: 50
   spawnPoint: {fileID: 0}
   enemyAgent: {fileID: 8855367933392588844}
---- !u!135 &8855367933392588846
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8855367933392588843}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 2.45
-  m_Center: {x: 0, y: 0, z: 0}
+  playerLoc: {fileID: 0}
+  attackRange: 0
 --- !u!195 &8855367933392588844
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -287,3 +276,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3848a62809bc6e44396da62fb0d335df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onAnimationTrigger:
+    m_PersistentCalls:
+      m_Calls: []
