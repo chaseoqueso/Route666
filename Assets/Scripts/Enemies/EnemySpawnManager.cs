@@ -53,15 +53,15 @@ public class EnemySpawnManager : MonoBehaviour
         totalSpawnedEnemies++;
         totalActiveEnemies++;
 
-        Debug.Log("current active enemy population: " + totalActiveEnemies);
+        // Debug.Log("current active enemy population: " + totalActiveEnemies);
     }
 
     public void SpawnEnemies()
     {
-        List<EnemySpawner> activeSpawners = new List<EnemySpawner>();
-        foreach(EnemySpawner spawner in enemySpawners){
-            
-        }
+        // List<EnemySpawner> activeSpawners = new List<EnemySpawner>();
+        // foreach(EnemySpawner spawner in enemySpawners){
+
+        // }
 
         // if(at least one spawner is in range){
             while(totalActiveEnemies < targetActiveEnemyPopulation){
@@ -69,6 +69,7 @@ public class EnemySpawnManager : MonoBehaviour
 
                 // TODO: Pick a random spawner w/in range of the player
 
+                // TEMP
                 enemySpawners[0].SpawnEnemy();
             }
         // }

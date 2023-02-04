@@ -6,7 +6,11 @@ using UnityEngine.UI;
 public class GameUIManager : MonoBehaviour
 {
     public PlayerHealthUITracker healthUI;    
+    
     public PauseMenu pauseMenu;
+    public LevelClearUI levelClearUI;
+    public DeathScreen deathUI;
+
     public Slider ruckusMeter;
 
     void Awake()

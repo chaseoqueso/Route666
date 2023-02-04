@@ -120,13 +120,20 @@ public class GameManager : MonoBehaviour
             }
 
             ruckusPoints += value;
+
+            if(ruckusPoints >= maxRuckusMeter){
+                SetRuckusValue(maxRuckusMeter);
+                TriggerBossFight();
+                return;
+            }
+
             UIManager.IncreaseRuckusMeter(value);
         }
 
         public void SetRuckusValue(int value)
         {
             ruckusPoints = value;
-            UIManager.SetRuckusMeter(value);
+            UIManager.SetRuckusMeter(ruckusPoints);
         }
 
         public void DecreaseRuckusValue(int value)
@@ -159,6 +166,14 @@ public class GameManager : MonoBehaviour
                 ruckusDecayRoutine = null;
                 yield break;
             }
+        }
+    
+        public void TriggerBossFight()
+        {
+            // TODO: Trigger boss fight based on scene
+
+            // TEMP
+            UIManager.levelClearUI.ActivateLevelClearUI();
         }
     #endregion
 }
