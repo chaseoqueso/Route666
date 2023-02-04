@@ -20,6 +20,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform model;
     [Tooltip("The head bone of the player.")]
     [SerializeField] private Transform head;
+    [Tooltip("The animator of the player.")]
+    [SerializeField] private Animator anim;
+    [Tooltip("The IK script on the player's hand.")]
+    [SerializeField] private DitzelGames.FastIK.FastIKFabric handIK;
 
     [Header("Camera")]
     [Tooltip("The maximum horizontal viewing angles.")]
@@ -106,6 +110,11 @@ public class PlayerMovement : MonoBehaviour
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
+
+        if(anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
 
         // Get the initial head rotation
         headStartAngle = head.rotation;
@@ -503,6 +512,8 @@ public class PlayerMovement : MonoBehaviour
                     shootScript.OnShoot();                                          // Call the shoot function
                 }
             }
+
+            anim.SetTrigger("Shoot");   // Trigger the shoot animation
         }
     }
 }
