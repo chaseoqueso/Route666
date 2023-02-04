@@ -20,6 +20,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform model;
     [Tooltip("The head bone of the player.")]
     [SerializeField] private Transform head;
+    [Tooltip("The root object of the motorcycle's steering mechanism.")]
+    [SerializeField] private Transform steering;
+    [Tooltip("The animator of the player.")]
+    [SerializeField] private Animator anim;
+    [Tooltip("The IK script on the player's hand.")]
+    [SerializeField] private DitzelGames.FastIK.FastIKFabric handIK;
 
     [Header("Camera")]
     [Tooltip("The maximum horizontal viewing angles.")]
@@ -56,6 +62,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxTurnChange;
     [Tooltip("The maximum angle the model will lean.")]
     [SerializeField] private float maxLeanAngle;
+    [Tooltip("The angle to rotate the handlebars.")]
+    [SerializeField] private float steeringTurnAngle;
+    [Tooltip("The speed to rotate the handlebars.")]
+    [SerializeField] private float steeringTurnSpeed;
 
     [Header("Drifting")]
     [Tooltip("The angle that the player will drift toward when drifting without pressing turning inputs.")]
@@ -107,6 +117,11 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
 
+        if(anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
+
         // Get the initial head rotation
         headStartAngle = head.rotation;
 
@@ -152,12 +167,19 @@ public class PlayerMovement : MonoBehaviour
         if(driftState != DriftState.None)   // If drifting
         {
             float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
-            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);                      // The angle range to skew the model
-            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle));  // Get the desired skew angle based on the skew angle range
+            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);      // The angle range to skew the model
+            float skewAmount = Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle);                            // Get the skew amount from 0 to 1
+            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, skewAmount);                                // Get the desired skew angle based on the skew angle range
+        
+            // Rotate the handlebars opposite to the drift direction
+            steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, -(int)driftState * steeringTurnAngle * 2f, 0), steeringTurnSpeed * Time.deltaTime);
         }
         else    // If not drifting
         {
             idealSkewAngle = 0;
+
+            // Rotate the handlebars according to the turn direction
+            steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, turnInput * steeringTurnAngle, 0), steeringTurnSpeed * Time.deltaTime);
         }
         float previousSkewAngle = driftSkewAngle;   // Record the previous angle
         driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.deltaTime);         // Move the drift angle toward the ideal
@@ -503,6 +525,8 @@ public class PlayerMovement : MonoBehaviour
                     shootScript.OnShoot();                                          // Call the shoot function
                 }
             }
+
+            anim.SetTrigger("Shoot");   // Trigger the shoot animation
         }
     }
 }
