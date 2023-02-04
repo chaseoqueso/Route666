@@ -12,12 +12,15 @@ public class Enemy : MonoBehaviour, IShootable
     [SerializeField] protected int attackValue = 1;
     [SerializeField] protected bool damageOnImpact;
 
+    [Tooltip("The radius outside of which the enemy will return to spawn")]
+    [SerializeField] private float leashDistance = 50f;
+
     [HideInInspector] public EnemySpawner spawnPoint;
 
     [SerializeField] private NavMeshAgent enemyAgent;
     [HideInInspector] public Transform playerLoc;
 
-    private bool followingPlayer = true;    // TEMP?
+    private bool followingPlayer;
 
     void Start()
     {
@@ -27,6 +30,14 @@ public class Enemy : MonoBehaviour, IShootable
 
     void Update()
     {
+        // If the player is out of range of the enemy, return to spawn
+        if( Vector3.Distance( transform.position, playerLoc.position ) >= leashDistance ){
+            followingPlayer = true;
+        }
+        else{
+            followingPlayer = false;
+        }
+
         if(followingPlayer){
             enemyAgent.SetDestination(playerLoc.position);
         }
@@ -46,8 +57,6 @@ public class Enemy : MonoBehaviour, IShootable
     {
         TakeDamage(GameManager.instance.player.gunDamage, KillType.normalGunKill);
     }
-
-    // TODO: Tether to spawn point
 
     #region Health Stuff
         public int GetMaxHealth()
