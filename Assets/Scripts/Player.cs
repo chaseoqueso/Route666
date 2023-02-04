@@ -14,14 +14,11 @@ public class Player : MonoBehaviour
     void Awake()
     {
         if(!GameManager.instance){
-            Debug.LogWarning("No Game Manager found in scene!");
+            Debug.LogError("No Game Manager found in scene!");
             return;
         }
         GameManager.instance.player = this;
-    }
 
-    void Start()
-    {
         currentHealth = maxHealth;
     }
 

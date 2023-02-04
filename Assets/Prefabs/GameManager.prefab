@@ -47,8 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   UIManager: {fileID: 0}
-  ruckusPoints: 0
-  maxRuckusMeter: 0
+  enemySpawnManager: {fileID: 0}
 --- !u!114 &4577362720269770111
 MonoBehaviour:
   m_ObjectHideFlags: 0

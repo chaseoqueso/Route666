@@ -28,20 +28,21 @@ public class GameManager : MonoBehaviour
     public Player player;
     public string horseName {get; private set;}
 
+    public EnemySpawnManager spawnManager;
     public GameUIManager UIManager;
 
     #region Ruckus
         public int ruckusPoints {get; private set;}
         public int maxRuckusMeter {get; private set;}
 
-        public int ruckusFromNormalGunKill {get; private set;}
-        public int ruckusFromCollisionKill {get; private set;}
-        public int ruckusDriftKill {get; private set;}
-        public int ruckusFromMidairKill {get; private set;}
-        public int ruckusFromEnvironmentalKill {get; private set;}
+        private int ruckusFromNormalGunKill;
+        private int ruckusFromCollisionKill;
+        private int ruckusDriftKill;
+        private int ruckusFromMidairKill;
+        private int ruckusFromEnvironmentalKill;
 
-        public int ruckusDecayValue {get; private set;}
-        public float ruckusDecayDelay {get; private set;}
+        private int ruckusDecayValue;
+        private float ruckusDecayDelay;
         private Coroutine ruckusDecayRoutine;
     #endregion
 
@@ -77,13 +78,23 @@ public class GameManager : MonoBehaviour
         horseName = input;
     }
 
-    public void ChangeScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-        currentScene = sceneName;
+    #region Scene Management
+        public void ChangeScene(string sceneName)
+        {
+            SceneManager.LoadScene(sceneName);
+            currentScene = sceneName;
 
-        ruckusDecayRoutine = null;
-    }
+            ruckusDecayRoutine = null;
+        }
+
+        public bool CurrentSceneIsALevel()
+        {
+            if(currentScene == LEVEL_1_SCENE_NAME){
+                return true;
+            }
+            return false;
+        }
+    #endregion
 
     #region Ruckus Management
         public void IncreaseRuckusValue(KillType killType)

@@ -5,24 +5,22 @@ using UnityEngine.UI;
 
 public class GameUIManager : MonoBehaviour
 {
-    public PlayerHealthUITracker healthUI;
-    
+    public PlayerHealthUITracker healthUI;    
     public PauseMenu pauseMenu;
-
     public Slider ruckusMeter;
 
     void Awake()
     {
         if(!GameManager.instance){
-            Debug.LogWarning("No Game Manager found in scene!");
+            Debug.LogError("No Game Manager found in scene!");
             return;
         }
         GameManager.instance.UIManager = this;
-    }
 
-    void Start()
-    {
         healthUI.RefillAllHealth();
+        
+        ruckusMeter.maxValue = GameManager.instance.maxRuckusMeter;
+        ruckusMeter.value = 0;
     }
 
     #region Ruckus Meter
