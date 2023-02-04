@@ -1,20 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour, IShootable
 {
-    [SerializeField] protected EnemyPathing enemyPathing;
-
     [SerializeField] protected int maxHealth = 1;
     public int currentHealth {get; private set;}
 
     [SerializeField] protected int attackValue = 1;
     [SerializeField] protected bool damageOnImpact;
 
-    void Start()
+    [Tooltip("The radius outside of which the enemy will return to spawn")]
+    [SerializeField] private float leashDistance = 50f;
+
+    [HideInInspector] public EnemySpawner spawnPoint;
+
+    [SerializeField] private NavMeshAgent enemyAgent;
+    [HideInInspector] public Transform playerLoc;
+
+    private bool followingPlayer;
+
+    void Awake()
     {
         currentHealth = maxHealth;
+        playerLoc = GameManager.instance.player.transform;
+    }
+
+    void Update()
+    {
+        // If the player is out of range of the enemy, return to spawn
+        if( Vector3.Distance( transform.position, playerLoc.position ) >= leashDistance ){
+            followingPlayer = true;
+        }
+        else{
+            followingPlayer = false;
+        }
+
+        if(followingPlayer){
+            enemyAgent.SetDestination(playerLoc.position);
+        }
+        else{
+            enemyAgent.SetDestination(spawnPoint.transform.position);
+        }        
     }
 
     void OnCollisionEnter(Collision collision)
@@ -45,7 +74,7 @@ public class Enemy : MonoBehaviour, IShootable
             currentHealth -= damageValue;
 
             if(currentHealth <= 0){
-                GameManager.instance.spawnManager.UpdatePopOnEnemyDeath();
+                spawnPoint.UpdatePopOnEnemyDeath();
                 GameManager.instance.IncreaseRuckusValue(killType);
                 Destroy(gameObject);
             }
