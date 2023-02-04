@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
 
     public Transform playerLoc;
 
-    public int totalSpawnedEnemies {get; private set;}     // All ALIVE spawned enemies that exist in the scene right now
+    // public int totalSpawnedEnemies {get; private set;}     // All ALIVE spawned enemies that exist in the scene right now
     public int totalActiveEnemies {get; private set;}      // All ACTIVE enemies spawned right now
 
     [Tooltip("This gets deleted on play; just here to make it easier to see in the editor")]
@@ -61,9 +61,16 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError("total spawn chance is greater than 100%");
         }
 
-        totalSpawnedEnemies = 0;
+        // totalSpawnedEnemies = 0;
         totalActiveEnemies = 0;
-        SpawnEnemiesIfPlayerOutOfRange();
+    }
+
+    void Update()
+    {
+        // If the player is out of range of the spawner, spawn more enemies
+        if( Vector3.Distance( transform.position, playerLoc.position ) >= spawnDistanceFromPlayer ){
+            SpawnEnemies();
+        }
     }
 
     public void SpawnEnemies()
@@ -85,22 +92,14 @@ public class EnemySpawner : MonoBehaviour
     // Called when an enemy dies
     public void UpdatePopOnEnemyDeath()
     {
-        totalSpawnedEnemies--;
+        // totalSpawnedEnemies--;
         totalActiveEnemies--;
-        SpawnEnemiesIfPlayerOutOfRange();
-    }
-
-    public void SpawnEnemiesIfPlayerOutOfRange()
-    {
-        // if(player not in range){     // CAN WE USE TRIGGERS!?
-            SpawnEnemies();
-        // }
     }
 
     // Called when an EnemySpawner creates a new enemy
     public void UpdatePopOnNewSpawn()
     {
-        totalSpawnedEnemies++;
+        // totalSpawnedEnemies++;
         totalActiveEnemies++;
     }
 }
