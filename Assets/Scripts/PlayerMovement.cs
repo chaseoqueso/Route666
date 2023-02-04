@@ -95,7 +95,6 @@ public class PlayerMovement : MonoBehaviour
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
     private bool isGrounded;                    // Whether the player is on the ground or not
-    private bool justStepped;                   // Whether the player just moved up a step
 
     // Camera
     private Quaternion headStartAngle;  // The head bone's starting angle
@@ -261,7 +260,6 @@ public class PlayerMovement : MonoBehaviour
 
             verticalVelocity -= gravityAccel * Time.fixedDeltaTime;  // Apply gravity
         }
-        justStepped = false;
 
         // ----------------------
         // --- PERFORM MOTION ---
@@ -328,7 +326,6 @@ public class PlayerMovement : MonoBehaviour
         {
             newMovement = movement;                                             // Keep the movement vector the same
             stepVector = Vector3.up * (hit.point.y - currentPosition.y);        // Move up to accomodate
-            justStepped = true;                                                 // Record that we just stepped
         }
         else if(secondHit.normal == hit.normal && Vector3.Angle(Vector3.up, hit.normal) < slopeLimit) // If the collision was with ground
         {
