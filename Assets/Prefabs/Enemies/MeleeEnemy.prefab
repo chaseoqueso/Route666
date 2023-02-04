@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 8855367933392588847}
   - component: {fileID: 8855367933392588846}
   - component: {fileID: 8855367933392588844}
-  - component: {fileID: 8855367933392588845}
   - component: {fileID: 2646825399489575539}
   m_Layer: 0
   m_Name: MeleeEnemy
@@ -81,10 +80,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1330215416cf93a46b64872a2528ebfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPathing: {fileID: 8855367933392588845}
   maxHealth: 1
   attackValue: 1
   damageOnImpact: 1
+  spawnPoint: {fileID: 0}
+  enemyAgent: {fileID: 8855367933392588844}
 --- !u!135 &8855367933392588846
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -120,19 +120,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8855367933392588845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8855367933392588843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44beef9a96d94b94dbe216da080207c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyAgent: {fileID: 8855367933392588844}
 --- !u!54 &2646825399489575539
 Rigidbody:
   m_ObjectHideFlags: 0
