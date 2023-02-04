@@ -37,13 +37,12 @@ public class Player : MonoBehaviour
         {
             currentHealth -= damageValue;
 
-            if(currentHealth <= 0){
-                GameManager.instance.UIManager.deathUI.ActivateDeathUI();
-                return;
-            }
-
             for(int i = 0; i < damageValue; i++){
                 GameManager.instance.UIManager.healthUI.RemoveHealth();
+            }
+
+            if(currentHealth <= 0){
+                GameManager.instance.UIManager.deathUI.ActivateDeathUI();
             }
         }
 
