@@ -9,6 +9,6 @@ public class AnimationWatcher : MonoBehaviour
 
     public void triggerEvents()
     {
-        
+        onAnimationTrigger.Invoke();
     }
 }
