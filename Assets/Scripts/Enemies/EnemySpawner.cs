@@ -17,10 +17,30 @@ public class SpawnTableEntry{
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private List<SpawnTableEntry> spawnTable = new List<SpawnTableEntry>();
-    [SerializeField] private EnemySpawnManager spawnManager;
 
     // [Tooltip("OPTIONAL timer - if the value here is > 0, it will spawn with a timer and IGNORE the target enemy population instead")]
     // [SerializeField] private float spawnTimer;
+
+    [Tooltip("If the radius of this spawner goes below this value, it waits until the player's out of range and spawns more")]
+    [SerializeField] private int targetActiveEnemies = 10;
+
+    [Tooltip("The radius outside of which enemies can spawn")]
+    [SerializeField] private float spawnDistanceFromPlayer = 50f;
+
+    public Transform playerLoc;
+
+    // public int totalSpawnedEnemies {get; private set;}     // All ALIVE spawned enemies that exist in the scene right now
+    public int totalActiveEnemies {get; private set;}      // All ACTIVE enemies spawned right now
+
+    [Tooltip("This gets deleted on play; just here to make it easier to see in the editor")]
+    [SerializeField] private GameObject editorSpatialIndicator;
+
+    void Awake()
+    {
+        if(editorSpatialIndicator){
+            Destroy(editorSpatialIndicator);
+        }
+    }
 
     void Start()
     {
@@ -41,21 +61,45 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError("total spawn chance is greater than 100%");
         }
 
-        if(!spawnManager){
-            Debug.LogError("No spawn manager assigned to an enemy spawner!");
-        }
-
-        spawnManager.enemySpawners.Add(this);
+        // totalSpawnedEnemies = 0;
+        totalActiveEnemies = 0;
     }
 
-    public void SpawnEnemy()
+    void Update()
     {
-        // (look at Continuum gear generation)
-        // TODO: generate a random number and find the % it matches and spawn that type of enemy
+        // If the player is out of range of the spawner, spawn more enemies
+        if( Vector3.Distance( transform.position, playerLoc.position ) >= spawnDistanceFromPlayer ){
+            SpawnEnemies();
+        }
+    }
 
-        // TEMP
-        Instantiate( spawnTable[0].EnemyPrefab(), gameObject.transform.position, Quaternion.identity );
+    public void SpawnEnemies()
+    {
+        while(totalActiveEnemies < targetActiveEnemies){
+            // (look at Continuum gear generation)
+            // TODO: generate a random number and find the % it matches and spawn that type of enemy
 
-        spawnManager.UpdatePopOnNewSpawn();
+            // TEMP
+            GameObject newEnemy = Instantiate( spawnTable[0].EnemyPrefab(), gameObject.transform.position, Quaternion.identity );
+
+            newEnemy.GetComponent<Enemy>().spawnPoint = this;
+            newEnemy.GetComponent<Enemy>().playerLoc = playerLoc;
+
+            UpdatePopOnNewSpawn();
+        }
+    }
+
+    // Called when an enemy dies
+    public void UpdatePopOnEnemyDeath()
+    {
+        // totalSpawnedEnemies--;
+        totalActiveEnemies--;
+    }
+
+    // Called when an EnemySpawner creates a new enemy
+    public void UpdatePopOnNewSpawn()
+    {
+        // totalSpawnedEnemies++;
+        totalActiveEnemies++;
     }
 }

@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public Player player;
     public string horseName {get; private set;}
 
-    public EnemySpawnManager spawnManager;
+    // public EnemySpawnManager spawnManager;
     public GameUIManager UIManager;
 
     #region Ruckus
