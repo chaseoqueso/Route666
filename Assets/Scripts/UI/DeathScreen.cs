@@ -10,7 +10,7 @@ public class DeathScreen : MonoBehaviour
     public void ActivateDeathUI()
     {
         Time.timeScale = 0f;
-        Cursor.visible = true;
+        GameManager.instance.UIManager.SetCursorActive(true);
 
         deathUI.SetActive(true);
         deathUIActive = true;
