@@ -282,6 +282,7 @@ MonoBehaviour:
   maxYLook: {x: -45, y: 45}
   lookSensitivity: 1
   slopeLimit: 45
+  stepHeight: 0.6
   wallLimit: 30
   modelTrackingSpeed: 180
   acceleration: 14
