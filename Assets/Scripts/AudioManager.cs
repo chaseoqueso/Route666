@@ -9,7 +9,8 @@ public class AudioManager : MonoBehaviour
     public enum MusicType
     {
         None,
-        MainMenu
+        MainMenu,
+        Level1
     }
 
     public enum SFXType
@@ -20,6 +21,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Music Tracks")]
     [FMODUnity.EventRef] public string mainMenuMusicTrack;
+    [FMODUnity.EventRef] public string greezeyGulchMusicTrack;
 
     [Header("Sound Effects")]
     [FMODUnity.EventRef] public string menuSelectEvent;
