@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1283117921099825459}
   - component: {fileID: 4646704218236136036}
   - component: {fileID: 6035899799914629732}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 4056730277582139764}
   - component: {fileID: 2722428705900583358}
   - component: {fileID: 297372219477219344}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ExplodingBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,6 +145,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRange: 2
+  explodableLayerMask:
+    serializedVersion: 2
+    m_Bits: 384
 --- !u!1 &5323696894166955948
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,7 +159,7 @@ GameObject:
   - component: {fileID: 7081090972742566990}
   - component: {fileID: 486773059100526222}
   - component: {fileID: 6766443543429217829}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
