@@ -14,14 +14,11 @@ public class Player : MonoBehaviour
     void Awake()
     {
         if(!GameManager.instance){
-            Debug.LogWarning("No Game Manager found in scene!");
+            Debug.LogError("No Game Manager found in scene!");
             return;
         }
         GameManager.instance.player = this;
-    }
 
-    void Start()
-    {
         currentHealth = maxHealth;
     }
 
@@ -40,14 +37,14 @@ public class Player : MonoBehaviour
         {
             currentHealth -= damageValue;
 
-            if(currentHealth <= 0){
-                // TODO: Do death stuff
-                Debug.Log("(you died)");
-                return;
-            }
-
             for(int i = 0; i < damageValue; i++){
                 GameManager.instance.UIManager.healthUI.RemoveHealth();
+            }
+
+            if(currentHealth <= 0){
+                // TODO: Uncomment this later when it's not horribly inconvenient
+                // GameManager.instance.UIManager.deathUI.ActivateDeathUI();
+                Debug.Log("you're dead (trust me)");
             }
         }
 

@@ -28,24 +28,27 @@ public class GameManager : MonoBehaviour
     public Player player;
     public string horseName {get; private set;}
 
+    // public EnemySpawnManager spawnManager;
     public GameUIManager UIManager;
 
     #region Ruckus
         public int ruckusPoints {get; private set;}
         public int maxRuckusMeter {get; private set;}
 
-        public int ruckusFromNormalGunKill {get; private set;}
-        public int ruckusFromCollisionKill {get; private set;}
-        public int ruckusDriftKill {get; private set;}
-        public int ruckusFromMidairKill {get; private set;}
-        public int ruckusFromEnvironmentalKill {get; private set;}
+        private int ruckusFromNormalGunKill;
+        private int ruckusFromCollisionKill;
+        private int ruckusDriftKill;
+        private int ruckusFromMidairKill;
+        private int ruckusFromEnvironmentalKill;
 
-        public int ruckusDecayValue {get; private set;}
-        public float ruckusDecayDelay {get; private set;}
+        private int ruckusDecayValue;
+        private float ruckusDecayDelay;
         private Coroutine ruckusDecayRoutine;
     #endregion
 
     public string currentScene {get; private set;}
+
+    public LoadEnemyMaterials enemyMaterialsData;
 
     void Awake()
     {
@@ -58,7 +61,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
 
         currentScene = SceneManager.GetActiveScene().name;
-
+        
         ruckusPoints = 0;
         maxRuckusMeter = 250;
 
@@ -77,13 +80,23 @@ public class GameManager : MonoBehaviour
         horseName = input;
     }
 
-    public void ChangeScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-        currentScene = sceneName;
+    #region Scene Management
+        public void ChangeScene(string sceneName)
+        {
+            SceneManager.LoadScene(sceneName);
+            currentScene = sceneName;
 
-        ruckusDecayRoutine = null;
-    }
+            ruckusDecayRoutine = null;
+        }
+
+        public bool CurrentSceneIsALevel()
+        {
+            if(currentScene == LEVEL_1_SCENE_NAME){
+                return true;
+            }
+            return false;
+        }
+    #endregion
 
     #region Ruckus Management
         public void IncreaseRuckusValue(KillType killType)
@@ -109,13 +122,20 @@ public class GameManager : MonoBehaviour
             }
 
             ruckusPoints += value;
+
+            if(ruckusPoints >= maxRuckusMeter){
+                SetRuckusValue(maxRuckusMeter);
+                TriggerBossFight();
+                return;
+            }
+
             UIManager.IncreaseRuckusMeter(value);
         }
 
         public void SetRuckusValue(int value)
         {
             ruckusPoints = value;
-            UIManager.SetRuckusMeter(value);
+            UIManager.SetRuckusMeter(ruckusPoints);
         }
 
         public void DecreaseRuckusValue(int value)
@@ -148,6 +168,14 @@ public class GameManager : MonoBehaviour
                 ruckusDecayRoutine = null;
                 yield break;
             }
+        }
+    
+        public void TriggerBossFight()
+        {
+            // TODO: Trigger boss fight based on scene
+
+            // TEMP
+            UIManager.levelClearUI.ActivateLevelClearUI();
         }
     #endregion
 }

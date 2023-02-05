@@ -20,6 +20,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform model;
     [Tooltip("The head bone of the player.")]
     [SerializeField] private Transform head;
+    [Tooltip("The root object of the motorcycle's steering mechanism.")]
+    [SerializeField] private Transform steering;
+    [Tooltip("The point to spawn bullets.")]
+    [SerializeField] private Transform bulletSpawnPoint;
+    [Tooltip("The muzzle flare object.")]
+    [SerializeField] private GameObject muzzleFlare;
+    [Tooltip("The animator of the player.")]
+    [SerializeField] private Animator anim;
+    [Tooltip("The IK script on the player's hand.")]
+    [SerializeField] private DitzelGames.FastIK.FastIKFabric handIK;
+    [Tooltip("The bullet prefab.")]
+    [SerializeField] private GameObject bulletPrefab;
+
+    [Header("Shooting")]
+    [Tooltip("The number of bullets per second.")]
+    [SerializeField] private float fireRate;
 
     [Header("Camera")]
     [Tooltip("The maximum horizontal viewing angles.")]
@@ -32,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Controller")]
     [Tooltip("The highest slope in degrees the player can climb.")]
     [SerializeField] private float slopeLimit;
+    [Tooltip("The highest size step the player can climb.")]
+    [SerializeField] private float stepHeight;
     [Tooltip("The sharpest angle in degrees the player can hit a wall before losing speed.")]
     [SerializeField] private float wallLimit;
     [Tooltip("The speed in degrees/s at which the model tracks the designated rotation.")]
@@ -54,6 +72,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxTurnChange;
     [Tooltip("The maximum angle the model will lean.")]
     [SerializeField] private float maxLeanAngle;
+    [Tooltip("The angle to rotate the handlebars.")]
+    [SerializeField] private float steeringTurnAngle;
+    [Tooltip("The speed to rotate the handlebars.")]
+    [SerializeField] private float steeringTurnSpeed;
 
     [Header("Drifting")]
     [Tooltip("The angle that the player will drift toward when drifting without pressing turning inputs.")]
@@ -78,9 +100,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 lookInput;  // The current look input
     private float driveInput;   // The current input value for accelerating or braking
     private float turnInput;    // The current input value for turning
+    private float driftInput;   // The current input value for accelerating or braking
 
     // Motion
     private Vector3 previousPosition;           // The position of the player last frame
+    private Vector3 groundNormal;               // The normal vector of the ground last frame
     private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
     private Vector2 angleRange;                 // The range of angles the player can turn within
     private Rigidbody rb;                       // The rigidbody that handles player movement
@@ -96,6 +120,9 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion headStartAngle;  // The head bone's starting angle
     private Vector2 lookAngle;          // The current look angle
 
+    // Shooting
+    private bool canShoot;              // Whether the player can shoot
+
     void Awake()
     {
         // Assign our components
@@ -103,8 +130,20 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
 
-        // Get the initial head rotation
-        headStartAngle = head.rotation;
+        // Initiate animator
+        if(anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
+        anim.SetFloat("FireRate", fireRate);
+
+        headStartAngle = head.rotation;     // Get the initial head rotation
+
+        groundNormal = Vector3.up;          // Set the initial ground normal
+
+        canShoot = true;                    // Enable shooting
+
+        muzzleFlare.SetActive(false);       // Disable muzzle flare
     }
 
     // We do camera stuff in LateUpdate because that's after input is read
@@ -145,12 +184,19 @@ public class PlayerMovement : MonoBehaviour
         if(driftState != DriftState.None)   // If drifting
         {
             float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
-            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);                      // The angle range to skew the model
-            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle));  // Get the desired skew angle based on the skew angle range
+            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);      // The angle range to skew the model
+            float skewAmount = Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle);                            // Get the skew amount from 0 to 1
+            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, skewAmount);                                // Get the desired skew angle based on the skew angle range
+        
+            // Rotate the handlebars opposite to the drift direction
+            steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, -(int)driftState * steeringTurnAngle * 2f, 0), steeringTurnSpeed * Time.deltaTime);
         }
         else    // If not drifting
         {
             idealSkewAngle = 0;
+
+            // Rotate the handlebars according to the turn direction
+            steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, turnInput * steeringTurnAngle, 0), steeringTurnSpeed * Time.deltaTime);
         }
         float previousSkewAngle = driftSkewAngle;   // Record the previous angle
         driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.deltaTime);         // Move the drift angle toward the ideal
@@ -221,31 +267,34 @@ public class PlayerMovement : MonoBehaviour
         // --- GROUND CHECK ---
         // --------------------
 
+        Vector3 capsulePoint = transform.position + Vector3.up * (coll.radius + groundCheckDistance);   // The center point of the capsule's lower sphere
+        Vector3 groundStickVector = Vector3.zero;
+        
+        // CapsuleCast downward using the player collider
         RaycastHit hit; 
-        Vector3 capsuleCenter = transform.position + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
-        Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                         // The vector from the center to one of the capsule points
-        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
-                               capsuleCenter + capsuleHalfHeight,
-                               coll.radius,
-                               Vector3.down,
-                               out hit,
-                               groundCheckDistance * 2,
-                               LayerMask.GetMask("Environment"))
-           && Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit)   // If we're on the ground
+        RaycastHit downHit;
+        if(Physics.SphereCast(capsulePoint, coll.radius, -groundNormal, out hit, stepHeight + groundCheckDistance, LayerMask.GetMask("Environment"))                // If the spherecast hit
+           && Physics.Raycast(transform.position + groundNormal * groundCheckDistance, -groundNormal, out downHit, stepHeight, LayerMask.GetMask("Environment"))    // And the center of the collider hit
+           && (Vector3.Angle(hit.normal, Vector3.up) <= slopeLimit || Vector3.Angle(downHit.normal, Vector3.up) <= slopeLimit)                                      // And we're on a ground surface
+           && (hit.distance < groundCheckDistance || isGrounded))                                                                                                   // And the hit distance is valid
         {
-            if(!isGrounded)
+            float groundDistance = coll.radius/Mathf.Cos(slopeLimit) - coll.radius;     // Trig to find theoretical ground based on slope
+            if(!isGrounded && hit.distance < groundDistance)                            // If the player isn't grounded but is within ground distance
             {
                 isGrounded = true;          // Set grounded to true
                 verticalVelocity = 0;       // Set our vertical velocity to 0
             }
-            rb.MovePosition(transform.position + Vector3.down * hit.distance + Vector3.up * groundCheckDistance/2);   // Stick the player to the ground
+            
+            groundStickVector = -groundNormal * hit.distance + Vector3.up * groundCheckDistance/2;     // Stick the player to the ground
+            groundNormal = downHit.normal;  // Store the groundNormal
         }
         else    // If we're not on the ground
         {
             if(isGrounded)  // If we just left the ground this frame
             {
-                verticalVelocity = (transform.position - previousPosition).y / Time.fixedDeltaTime;    // Set our velocity to the actual current velocity
-                isGrounded = false;                                                                    // Set grounded to false
+                verticalVelocity = (transform.position - previousPosition).y / Time.fixedDeltaTime;     // Set our velocity to the actual current velocity
+                isGrounded = false;                                                                     // Set grounded to false
+                groundNormal = Vector3.up;                                                              // Reset the ground normal
             }
 
             verticalVelocity -= gravityAccel * Time.fixedDeltaTime;  // Apply gravity
@@ -264,19 +313,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveVector = (transform.forward * velocity) + (Vector3.up * verticalVelocity) + pushVelocity;   // Calculate total velocity
 
         // Check for collision
-        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight,
-                               capsuleCenter + capsuleHalfHeight,
-                               coll.radius,
-                               moveVector,
-                               out hit,
-                               moveVector.magnitude * Time.fixedDeltaTime,
-                               LayerMask.GetMask("Environment")))   // If we hit something
+        Vector3 capsuleCenter = transform.position + groundStickVector + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
+        Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                                             // The vector from the center to one of the capsule points
+        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight, capsuleCenter + capsuleHalfHeight, coll.radius,
+                               moveVector, out hit, moveVector.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment")))   // If we hit something
         {
-            OnCollision(moveVector, hit);   // Handle the collision
+            OnCollision(moveVector, groundStickVector, hit);   // Handle the collision
         }
         else
         {
-            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);    // Apply movement
+            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime + groundStickVector);    // Apply movement
 
             // If pushVelocity is nearly zero
             if(pushVelocity.magnitude < Time.fixedDeltaTime)
@@ -290,16 +336,37 @@ public class PlayerMovement : MonoBehaviour
         }
     } 
 
-    private void OnCollision(Vector3 movement, RaycastHit hit)
+    private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit)
     {
+        Vector3 currentPosition = transform.position + groundStick;
+
         // Split movement into vertical and horizontal
-        Vector3 verMovement = Vector3.Project(movement, Vector3.up);
-        Vector3 horMovement = Vector3.ProjectOnPlane(movement, Vector3.up);
+        Vector3 playerMovement = movement - pushVelocity;
+        Vector3 verMovement = Vector3.Project(playerMovement, Vector3.up);
+        Vector3 horMovement = Vector3.ProjectOnPlane(playerMovement, Vector3.up);
+        Vector3 stepVector = Vector3.zero;
         Vector3 newMovement;
 
-        
-        // If the collision was with ground
-        if(Vector3.Angle(Vector3.up, hit.normal) < slopeLimit)
+        // Try a normal raycast at the same location
+        RaycastHit secondHit;
+        if(!Physics.Raycast(hit.point + hit.normal * groundCheckDistance,
+                           -hit.normal,
+                           out secondHit,
+                           groundCheckDistance * 2,
+                           LayerMask.GetMask("Environment")))
+        {
+            // If it didn't hit anything, something is very wrong
+            Debug.LogError("A secondary raycast attempt failed. This should not be possible.");
+            return;
+        }
+
+        // If the hit was at a corner within step height
+        if(secondHit.normal != hit.normal && hit.point.y - currentPosition.y <= stepHeight)
+        {
+            newMovement = movement;                                             // Keep the movement vector the same
+            stepVector = Vector3.up * (hit.point.y - currentPosition.y);        // Move up to accomodate
+        }
+        else if(secondHit.normal == hit.normal && Vector3.Angle(Vector3.up, hit.normal) < slopeLimit) // If the collision was with ground
         {
             Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, hit.normal);   // Get the movement vector along the ground plane
 
@@ -358,9 +425,9 @@ public class PlayerMovement : MonoBehaviour
         
         Vector3 newHorMovement = Vector3.ProjectOnPlane(newMovement, Vector3.up);   // Isolate the horizontal motion
 
-        rb.MovePosition(transform.position + newMovement * Time.fixedDeltaTime);    // Apply motion
-        velocity = newHorMovement.magnitude;                                        // Update internal velocity to match
-        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;      // Update internal velocity to match
+        rb.MovePosition(currentPosition + stepVector + (newMovement + pushVelocity) * Time.fixedDeltaTime);     // Apply motion
+        velocity = newHorMovement.magnitude;                                                                    // Update internal velocity to match
+        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;                                  // Update internal velocity to match
 
         if(newHorMovement.magnitude > 0)
         {
@@ -385,7 +452,8 @@ public class PlayerMovement : MonoBehaviour
     // This gets called whenever there is a change in the input for the Look action
     public void OnLook(CallbackContext context)
     {
-        if(PauseMenu.gameIsPaused){
+        if(GameIsPaused()){
+            lookInput = Vector2.zero;
             return;
         }
 
@@ -406,7 +474,11 @@ public class PlayerMovement : MonoBehaviour
     // This gets called whenever there is a change in the input for the Turn action
     public void OnTurn(CallbackContext context)
     {
-        turnInput = context.ReadValue<float>();
+        turnInput = context.ReadValue<float>();     // Read the input value
+        if(driftState == DriftState.None && driftInput > 0 && Mathf.Abs(turnInput) > 0) // If drift is pressed and a turn input is pressed but not yet drifting
+        {
+            driftState = (DriftState)Mathf.Sign(turnInput);                             // Drift in the turn direction
+        }
     }
 
     // This gets called whenever there is a change in the input for the Drift action
@@ -416,12 +488,12 @@ public class PlayerMovement : MonoBehaviour
         // --- DRIFTING ---
         // ----------------
 
-        float driftInput = context.ReadValue<float>();  // Read the input value
+        driftInput = context.ReadValue<float>();        // Read the input value
         if(driftState == DriftState.None)               // If not currently drifting
         {
-            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)  // If drift is pressed and a turn input is pressed
+            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)          // If drift is pressed and a turn input is pressed
             {
-                driftState = (DriftState)Mathf.Sign(turnInput);
+                driftState = (DriftState)Mathf.Sign(turnInput);     // Drift in the turn direction
             }
         }
         else    // If currently drifting
@@ -435,6 +507,10 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnPause(CallbackContext context)
     {
+        if(LevelClearUI.levelClearUIActive || DeathScreen.deathUIActive){
+            return;
+        }
+
         if(PauseMenu.gameIsPaused){
             GameManager.instance.UIManager.pauseMenu.ResumeGame();
         }
@@ -443,12 +519,19 @@ public class PlayerMovement : MonoBehaviour
         }        
     }
 
+    public bool GameIsPaused()
+    {
+        return PauseMenu.gameIsPaused || LevelClearUI.levelClearUIActive || DeathScreen.deathUIActive;
+    }
+
     // This gets called whenever there is a change in the input for the Fire action
     public void OnFire(CallbackContext context)
     {
         // If the fire button was pressed
-        if(context.ReadValue<float>() > 0)
+        if(!GameIsPaused() && canShoot && context.performed && context.ReadValue<float>() > 0)
         {
+            Vector3 bulletDirection = Camera.main.transform.forward;
+
             // Send a raycast out from the camera in the direction the player is looking
             RaycastHit hit;
             if(Physics.Raycast(Camera.main.transform.position,
@@ -461,7 +544,22 @@ public class PlayerMovement : MonoBehaviour
                 {
                     shootScript.OnShoot();                                          // Call the shoot function
                 }
+                bulletDirection = hit.point - bulletSpawnPoint.position;
             }
+
+            anim.SetTrigger("Shoot");   // Trigger the shoot animation
+            Bullet bulletScript = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity).GetComponent<Bullet>();
+            bulletScript.Initialize(bulletDirection.normalized * 150, 100);
+
+            // Activate muzzle flare
+            muzzleFlare.SetActive(true);
+            IEnumerator DisableFlare() { yield return new WaitForSeconds(0.05f); muzzleFlare.SetActive(false); }
+            StartCoroutine(DisableFlare());
+
+            // Disable shooting temporarily
+            canShoot = false;
+            IEnumerator ResetShooting() { yield return new WaitForSeconds(1/fireRate); canShoot = true; }
+            StartCoroutine(ResetShooting());
         }
     }
 }
