@@ -66,7 +66,7 @@ public class EnemySpawner : MonoBehaviour
     void Update()
     {
         // If the player is out of range of the spawner, spawn more enemies
-        if( Vector3.Distance( transform.position, playerLoc.position ) >= spawnDistanceFromPlayer ){
+        if( Vector3.Distance( transform.position, playerLoc.position ) >= spawnDistanceFromPlayer ){    // totalActiveEnemies < targetActiveEnemies &&
             SpawnEnemies();
         }
     }

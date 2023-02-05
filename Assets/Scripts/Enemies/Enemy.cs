@@ -91,12 +91,14 @@ public class Enemy : MonoBehaviour, IShootable
 
         public virtual void TakeDamage(int damageValue, KillType killType)
         {
-            currentHealth -= damageValue;
+            if(currentHealth > 0){
+                currentHealth -= damageValue;
 
-            if(currentHealth <= 0){
-                spawnPoint.UpdatePopOnEnemyDeath();
-                GameManager.instance.IncreaseRuckusValue(killType);
-                Destroy(gameObject);
+                if(currentHealth <= 0){
+                    spawnPoint.UpdatePopOnEnemyDeath();
+                    GameManager.instance.IncreaseRuckusValue(killType);
+                    Destroy(gameObject);
+                }
             }
         }
 

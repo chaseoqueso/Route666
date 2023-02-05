@@ -9,6 +9,9 @@ public class MeleeEnemy : Enemy
     [Tooltip("Range of attack (within which the player can actually be hit)")]
     [SerializeField] protected float meleeAttackHitBoxSize = 4;
 
+    // [Tooltip("If the enemy's calculated path distance to the player is this amount LONGER than the straight line distance to the player - and the player is w/in LOS - ranged attack instead")]
+    // [SerializeField] protected float pathVsStraightDistanceLimit = 10;
+
     void Start()
     {
         // The frame the animation would theoretically hit the player, do stuff
@@ -23,18 +26,33 @@ public class MeleeEnemy : Enemy
             case EnemyState.Aggro:
                 // Enemy is currently within maxDistanceFromSpawn + player is w/in enemy's aggroRadius, trying to attack when possible
 
+                float distanceFromPlayer = Vector3.Distance( transform.position, playerLoc.position );
+
                 // If the enemy is out of range of their spawn point, tether them back home
                 if( EnemyIsOutOfRangeOfEntity(spawnPoint.transform.position, maxDistanceFromSpawn) ){
                     TransitionState(EnemyState.Leashed);
                 }
                 // Check if the player is in range (if so, trigger attack)
-                else if( EntityIsWithinRadiusOfEnemy(playerLoc.position, meleeAttackRange) ){
+                else if( distanceFromPlayer <= meleeAttackRange ){
                     TransitionState(EnemyState.Attacking);
                 }
                 // If none of that applies, just continue following the player
                 else{
                     enemyAgent.SetDestination(playerLoc.position);
                 }
+
+                // // If the enemy's calculated path distance to the player is this amount LONGER than the straight line distance to the player - and the player is w/in LOS - ranged attack instead
+                // if(enemyAgent.remainingDistance - distanceFromPlayer >= pathVsStraightDistanceLimit){
+                //     // shoot instead
+
+                //     /*
+                //         NOTE: Apparently this is a problem because:
+                //         "As of Unity 2019.3, NavMeshAgent.remainingDistance is still calculated only after the penultimate corner of the path has been reached,
+                //         and the agent is traversing the last segment. Before that, remainingDistance will return infinity. Sadly, this is undocumented."
+
+                //         (Leaving it unimplmeneted for now because of this)
+                //     */
+                // }
 
                 break;
 
