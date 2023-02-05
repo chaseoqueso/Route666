@@ -22,10 +22,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform head;
     [Tooltip("The root object of the motorcycle's steering mechanism.")]
     [SerializeField] private Transform steering;
+    [Tooltip("The point to spawn bullets.")]
+    [SerializeField] private Transform bulletSpawnPoint;
+    [Tooltip("The muzzle flare object.")]
+    [SerializeField] private GameObject muzzleFlare;
     [Tooltip("The animator of the player.")]
     [SerializeField] private Animator anim;
     [Tooltip("The IK script on the player's hand.")]
     [SerializeField] private DitzelGames.FastIK.FastIKFabric handIK;
+    [Tooltip("The bullet prefab.")]
+    [SerializeField] private GameObject bulletPrefab;
 
     [Header("Shooting")]
     [Tooltip("The number of bullets per second.")]
@@ -136,6 +142,8 @@ public class PlayerMovement : MonoBehaviour
         groundNormal = Vector3.up;          // Set the initial ground normal
 
         canShoot = true;                    // Enable shooting
+
+        muzzleFlare.SetActive(false);       // Disable muzzle flare
     }
 
     // We do camera stuff in LateUpdate because that's after input is read
@@ -445,6 +453,7 @@ public class PlayerMovement : MonoBehaviour
     public void OnLook(CallbackContext context)
     {
         if(GameIsPaused()){
+            lookInput = Vector2.zero;
             return;
         }
 
@@ -519,8 +528,10 @@ public class PlayerMovement : MonoBehaviour
     public void OnFire(CallbackContext context)
     {
         // If the fire button was pressed
-        if(canShoot && context.performed && context.ReadValue<float>() > 0)
+        if(!GameIsPaused() && canShoot && context.performed && context.ReadValue<float>() > 0)
         {
+            Vector3 bulletDirection = Camera.main.transform.forward;
+
             // Send a raycast out from the camera in the direction the player is looking
             RaycastHit hit;
             if(Physics.Raycast(Camera.main.transform.position,
@@ -533,9 +544,17 @@ public class PlayerMovement : MonoBehaviour
                 {
                     shootScript.OnShoot();                                          // Call the shoot function
                 }
+                bulletDirection = hit.point - bulletSpawnPoint.position;
             }
 
             anim.SetTrigger("Shoot");   // Trigger the shoot animation
+            Bullet bulletScript = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity).GetComponent<Bullet>();
+            bulletScript.Initialize(bulletDirection.normalized * 150, 100);
+
+            // Activate muzzle flare
+            muzzleFlare.SetActive(true);
+            IEnumerator DisableFlare() { yield return new WaitForSeconds(0.05f); muzzleFlare.SetActive(false); }
+            StartCoroutine(DisableFlare());
 
             // Disable shooting temporarily
             canShoot = false;
