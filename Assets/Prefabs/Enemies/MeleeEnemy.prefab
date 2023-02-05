@@ -83,13 +83,18 @@ MonoBehaviour:
   maxHealth: 1
   attackValue: 1
   damageOnImpact: 1
-  leashDistance: 50
+  maxDistanceFromSpawn: 50
+  stopRetreatRange: 25
   aggroRadius: 20
+  walkSpeed: 2.5
+  runSpeed: 3.5
+  idleDurationInSeconds: 5
   spawnPoint: {fileID: 0}
   enemyAgent: {fileID: 8855367933392588844}
   playerLoc: {fileID: 0}
   enemyAnimator: {fileID: 1062065234281259366}
-  attackRange: 4
+  meleeAttackRange: 2
+  meleeAttackHitBoxSize: 4
 --- !u!195 &8855367933392588844
 NavMeshAgent:
   m_ObjectHideFlags: 0
