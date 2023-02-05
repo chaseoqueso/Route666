@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
 
         currentScene = SceneManager.GetActiveScene().name;
-
+        
         ruckusPoints = 0;
         maxRuckusMeter = 250;
 
