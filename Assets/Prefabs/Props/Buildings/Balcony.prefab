@@ -52,6 +52,7 @@ Transform:
   - {fileID: 8995656990393515048}
   - {fileID: 7726597084297063806}
   - {fileID: 4784341419803378654}
+  - {fileID: 9093131608328854062}
   m_Father: {fileID: 3253034022375903904}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -82,12 +83,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7538940344586028142}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.09, y: 4.62, z: 0}
+  m_LocalPosition: {x: 0.09000015, y: 4.62, z: 0}
   m_LocalScale: {x: 0.2401, y: 1.2201, z: 9.948306}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3253034022375903904}
-  m_RootOrder: 6
+  m_Father: {fileID: 717288100695775511}
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2830938952828746057
 MeshFilter:
@@ -186,7 +187,6 @@ Transform:
   - {fileID: 6912013210558797047}
   - {fileID: 821352211143111319}
   - {fileID: 717288100695775511}
-  - {fileID: 9093131608328854062}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -257,7 +257,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (2)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &5011118834181569346 stripped
 Transform:
@@ -331,7 +336,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (3)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &5102458626041803068 stripped
 Transform:
@@ -479,7 +489,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (4)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &4816230524065792504 stripped
 Transform:
@@ -553,7 +568,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (24)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &4784341419803378654 stripped
 Transform:
@@ -627,7 +647,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (11)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &4897801482254796601 stripped
 Transform:
@@ -701,7 +726,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (14)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &5554061517838708542 stripped
 Transform:
@@ -775,7 +805,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (9)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &5632633928813367193 stripped
 Transform:
@@ -849,7 +884,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (21)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &5778487520608541079 stripped
 Transform:
@@ -927,7 +967,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (18)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &5843534296723731069 stripped
 Transform:
@@ -1008,6 +1053,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 902691cb350355444bf4649b66fc3de8, type: 3}
       propertyPath: m_Name
       value: Balcony
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 902691cb350355444bf4649b66fc3de8, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 902691cb350355444bf4649b66fc3de8, type: 3}
@@ -1101,7 +1150,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (15)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &7470247385126012745 stripped
 Transform:
@@ -1249,7 +1303,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (23)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &7726597084297063806 stripped
 Transform:
@@ -1327,7 +1386,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (20)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &8378456971543082530 stripped
 Transform:
@@ -1401,7 +1465,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (22)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &8995656990393515048 stripped
 Transform:
@@ -1479,7 +1548,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (17)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &8725454034801760529 stripped
 Transform:
@@ -1553,7 +1627,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (6)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &1060230991037583370 stripped
 Transform:
@@ -1627,7 +1706,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (5)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &734639309876853218 stripped
 Transform:
@@ -1775,7 +1859,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (8)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &1242276379968710083 stripped
 Transform:
@@ -1849,7 +1938,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (12)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &1310554669271886758 stripped
 Transform:
@@ -1923,7 +2017,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (7)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &1989035688659423284 stripped
 Transform:
@@ -1997,7 +2096,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &2009481624811477597 stripped
 Transform:
@@ -2071,7 +2175,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (10)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &2793371257531032443 stripped
 Transform:
@@ -2219,7 +2328,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (16)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &3650880673913142002 stripped
 Transform:
@@ -2293,7 +2407,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (13)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &4469842682582695276 stripped
 Transform:
@@ -2371,7 +2490,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallEndHighPoly (19)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6515622379154418060, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 762a1d3a2e64d994d80e7792f9d1edd2, type: 3}
 --- !u!4 &4076787171101762689 stripped
 Transform:
