@@ -97,30 +97,31 @@ public class MeleeEnemy : Enemy
 
     private void TransitionState( EnemyState newState )
     {
+        // Debug.Log("Previous State: " + enemyState + "\nNew State: " + newState);
+
         switch(newState){
             case EnemyState.Aggro:
-                enemyAgent.isStopped = false;   // DOES THIS WORK??? if not, set destination to current pos?
                 enemyAgent.speed = runSpeed;
                 break;
 
             case EnemyState.Attacking:
-                enemyAgent.isStopped = true;
+                enemyAgent.destination = transform.position;
+                enemyAgent.velocity = new Vector3(0,0,0);
                 enemyAnimator.SetTrigger("Attack");
                 break;
 
             case EnemyState.Leashed:
-                enemyAgent.isStopped = false;
-                enemyAgent.speed = runSpeed;    // Maybe?
+                enemyAgent.speed = walkSpeed;
                 enemyAgent.SetDestination(spawnPoint.transform.position);   // Does it work to just put this here? (not update?)
                 break;
             
             case EnemyState.Idle:
-                enemyAgent.isStopped = true;
+                enemyAgent.destination = transform.position;
+                enemyAgent.velocity = new Vector3(0,0,0);
                 idleRoutine = StartCoroutine(IdleCountdownRoutine());
                 break;
 
             case EnemyState.Wander:
-                enemyAgent.isStopped = false;
                 enemyAgent.speed = walkSpeed;
 
                 // TODO: Pick a nearby random location as the destination
