@@ -61,6 +61,10 @@ public class EnemySpawner : MonoBehaviour
         }
 
         totalActiveEnemies = 0;
+
+        if(!playerLoc){
+            playerLoc = GameManager.instance.player.transform;
+        }
     }
 
     void Update()
@@ -155,7 +159,6 @@ public class EnemySpawner : MonoBehaviour
             }
         }
 
-        // Clothes AND hair mats are both included in this category
         private Material ChooseRandomClothesMat()
         {
             List<Material> clothesMats = GameManager.instance.enemyMaterialsData.GetPunkClothesMats();
