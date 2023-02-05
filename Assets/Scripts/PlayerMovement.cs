@@ -27,6 +27,10 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("The IK script on the player's hand.")]
     [SerializeField] private DitzelGames.FastIK.FastIKFabric handIK;
 
+    [Header("Shooting")]
+    [Tooltip("The number of bullets per second.")]
+    [SerializeField] private float fireRate;
+
     [Header("Camera")]
     [Tooltip("The maximum horizontal viewing angles.")]
     [SerializeField] private Vector2 maxXLook;
@@ -110,6 +114,9 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion headStartAngle;  // The head bone's starting angle
     private Vector2 lookAngle;          // The current look angle
 
+    // Shooting
+    private bool canShoot;              // Whether the player can shoot
+
     void Awake()
     {
         // Assign our components
@@ -117,16 +124,18 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
 
+        // Initiate animator
         if(anim == null)
         {
             anim = GetComponentInChildren<Animator>();
         }
+        anim.SetFloat("FireRate", fireRate);
 
-        // Get the initial head rotation
-        headStartAngle = head.rotation;
+        headStartAngle = head.rotation;     // Get the initial head rotation
 
-        // Set the initial ground normal
-        groundNormal = Vector3.up;
+        groundNormal = Vector3.up;          // Set the initial ground normal
+
+        canShoot = true;                    // Enable shooting
     }
 
     // We do camera stuff in LateUpdate because that's after input is read
@@ -510,7 +519,7 @@ public class PlayerMovement : MonoBehaviour
     public void OnFire(CallbackContext context)
     {
         // If the fire button was pressed
-        if(context.ReadValue<float>() > 0)
+        if(canShoot && context.performed && context.ReadValue<float>() > 0)
         {
             // Send a raycast out from the camera in the direction the player is looking
             RaycastHit hit;
@@ -527,6 +536,11 @@ public class PlayerMovement : MonoBehaviour
             }
 
             anim.SetTrigger("Shoot");   // Trigger the shoot animation
+
+            // Disable shooting temporarily
+            canShoot = false;
+            IEnumerator ResetShooting() { yield return new WaitForSeconds(1/fireRate); canShoot = true; }
+            StartCoroutine(ResetShooting());
         }
     }
 }

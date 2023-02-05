@@ -208,6 +208,7 @@ MonoBehaviour:
   steering: {fileID: 2075159139880142465}
   anim: {fileID: 9203775666964204359}
   handIK: {fileID: 9203775667639781847}
+  fireRate: 2.5
   maxXLook: {x: -60, y: 60}
   maxYLook: {x: -45, y: 45}
   lookSensitivity: 1

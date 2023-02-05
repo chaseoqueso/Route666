@@ -83,12 +83,18 @@ MonoBehaviour:
   maxHealth: 1
   attackValue: 1
   damageOnImpact: 1
-  leashDistance: 50
+  maxDistanceFromSpawn: 50
+  stopRetreatRange: 25
+  aggroRadius: 20
+  walkSpeed: 2.5
+  runSpeed: 3.5
+  idleDurationInSeconds: 5
   spawnPoint: {fileID: 0}
   enemyAgent: {fileID: 8855367933392588844}
   playerLoc: {fileID: 0}
   enemyAnimator: {fileID: 1062065234281259366}
-  attackRange: 4
+  meleeAttackRange: 2
+  meleeAttackHitBoxSize: 4
 --- !u!195 &8855367933392588844
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -100,10 +106,10 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 15
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 2.5
+  m_StoppingDistance: 4
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -291,7 +297,7 @@ PrefabInstance:
     - target: {fileID: -741627461695282249, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: 94a1437943f186a498e0c32515ec1435, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f9a16def24cff641bb7363c5d1e82af, type: 2}
     - target: {fileID: -433525111948819928, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -307,7 +313,7 @@ PrefabInstance:
     - target: {fileID: -381813403878800884, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[2]
       value: 
-      objectReference: {fileID: 2100000, guid: 94a1437943f186a498e0c32515ec1435, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f9a16def24cff641bb7363c5d1e82af, type: 2}
     - target: {fileID: -329546411514808976, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -371,15 +377,15 @@ PrefabInstance:
     - target: {fileID: 2225803789910884052, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 94a1437943f186a498e0c32515ec1435, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f9a16def24cff641bb7363c5d1e82af, type: 2}
     - target: {fileID: 2225803789910884052, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: 8ab6854cae195d4498f7740a70fc60de, type: 2}
+      objectReference: {fileID: 2100000, guid: 94660ea78dc983948a1f840a5507f48a, type: 2}
     - target: {fileID: 2225803789910884052, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[2]
       value: 
-      objectReference: {fileID: 2100000, guid: 253496241a66f334da8c84a2e8456a71, type: 2}
+      objectReference: {fileID: 2100000, guid: f9b63ed76025c08489b2a19ae9f07323, type: 2}
     - target: {fileID: 2225803789910884052, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[3]
       value: 
@@ -503,7 +509,7 @@ PrefabInstance:
     - target: {fileID: 8022419838511775436, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: 94a1437943f186a498e0c32515ec1435, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f9a16def24cff641bb7363c5d1e82af, type: 2}
     - target: {fileID: 8084948185424441816, guid: 9c81e901d49596d42aa4e6e313b004b0, type: 3}
       propertyPath: m_Layer
       value: 7
