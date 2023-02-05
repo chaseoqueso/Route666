@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Skin
+  m_Name: Skin 0
   m_Shader: {fileID: 4800000, guid: 8fa84e1c8f3a97b4bb416e8eb087630e, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -94,7 +94,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.6156863, g: 0.41960785, b: 0.23921569, a: 1}
+    - _Color: {r: 0.8113208, g: 0.6494712, b: 0.5005696, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0.56206894, g: 0.56206894, b: 0.56206894, a: 1}
     - _HighColor: {r: 0.99426895, g: 1, b: 0.6102941, a: 1}

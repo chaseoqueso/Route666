@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
 
     public string currentScene {get; private set;}
 
+    public LoadEnemyMaterials enemyMaterialsData;
+
     void Awake()
     {
         if( instance ){
