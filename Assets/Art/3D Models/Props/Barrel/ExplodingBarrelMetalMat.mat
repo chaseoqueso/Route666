@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BarrelMetalMat
+  m_Name: ExplodingBarrelMetalMat
   m_Shader: {fileID: 4800000, guid: 8fa84e1c8f3a97b4bb416e8eb087630e, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -82,7 +82,7 @@ Material:
     - _Metallic: 1
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineSize: 3
+    - _OutlineSize: 8
     - _Parallax: 0.02
     - _RampLevels: 3
     - _RimAlpha: 0
@@ -99,6 +99,6 @@ Material:
     - _FresnelColor: {r: 0.56206894, g: 0.56206894, b: 0.56206894, a: 1}
     - _HighColor: {r: 0.9982276, g: 1, b: 0.82452834, a: 1}
     - _LowColor: {r: 1, g: 0.68235296, b: 0.7366397, a: 1}
-    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 0, b: 0, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
