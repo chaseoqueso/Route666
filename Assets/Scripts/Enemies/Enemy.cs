@@ -13,7 +13,27 @@ public class Enemy : MonoBehaviour, IShootable
     [SerializeField] protected bool damageOnImpact;
 
     [Tooltip("The radius outside of which the enemy will return to spawn")]
-    [SerializeField] protected float leashDistance = 50f;
+    [SerializeField] protected float maxDistanceFromSpawn = 50f;   
+    [SerializeField] protected float aggroRadius = 20f;
+
+    /*
+        - enemy within maxDistanceFromSpawn + player w/in enemy's aggroRadius:
+            > enemy is following player and is going to try to melee you
+
+        - when enemy gets within attack range
+            > then the enemy will STOP MOVING, start the attack anim, once attack anim is complete
+            it will RESUME moving
+
+        - if the enemy ever passes beyond maxDistanceFromSpawn, it is now "leashed"
+            > paths back to its spawn point
+            > ignores the player in every way
+            > UNTIL enemy is within a certain distance from spawn point ("back home")
+
+        - "in a perfect world, max polish" when player is not nearby:
+            > idle
+            > randomly moves around (at a WALKING SPEED, not MAX RUNNING SPEED) (picks a nearby
+            location and walks there, stays for a bit, then walks some more)
+    */
 
     [HideInInspector] public EnemySpawner spawnPoint;
 
@@ -22,32 +42,12 @@ public class Enemy : MonoBehaviour, IShootable
 
     [SerializeField] protected Animator enemyAnimator;
 
-    private bool followingPlayer;
-
     void Awake()
     {
         currentHealth = maxHealth;
         playerLoc = GameManager.instance.player.transform;
-    }
 
-    public virtual void Update()
-    {
-        // If the player is out of range of the enemy, return to spawn
-        if( Vector3.Distance( transform.position, playerLoc.position ) >= leashDistance ){
-            followingPlayer = true;
-        }
-        else{
-            followingPlayer = false;
-        }
-
-        if(followingPlayer){
-            enemyAgent.SetDestination(playerLoc.position);
-            // enemyAgent.isStopped = false;
-        }
-        else{
-            enemyAgent.SetDestination(spawnPoint.transform.position);
-            // enemyAgent.isStopped = true;
-        }        
+        enemyAgent.SetDestination(playerLoc.position);
     }
 
     void OnCollisionEnter(Collision collision)
