@@ -11,6 +11,20 @@ public class MeleeEnemy : Enemy
         // The frame the animation would theoretically hit the player, do stuff
         GetComponentInChildren<AnimationWatcher>().onAnimationTrigger.AddListener(MeleeAttack);
     }
+
+    public override void Update()
+    {
+        base.Update();
+
+        // check if the player is in range (if so, trigger attack)
+        if( Vector3.Distance( transform.position, playerLoc.position ) <= attackRange ){
+            enemyAnimator.SetTrigger("Attack");
+        }
+
+        // TODO
+        // set the speed parameter for the walking and running animation to match up with what the 
+        // enemy is currently doing
+    }
     
     public void MeleeAttack()
     {

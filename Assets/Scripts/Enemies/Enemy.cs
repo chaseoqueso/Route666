@@ -13,12 +13,14 @@ public class Enemy : MonoBehaviour, IShootable
     [SerializeField] protected bool damageOnImpact;
 
     [Tooltip("The radius outside of which the enemy will return to spawn")]
-    [SerializeField] private float leashDistance = 50f;
+    [SerializeField] protected float leashDistance = 50f;
 
     [HideInInspector] public EnemySpawner spawnPoint;
 
-    [SerializeField] private NavMeshAgent enemyAgent;
+    [SerializeField] protected NavMeshAgent enemyAgent;
     [HideInInspector] public Transform playerLoc;
+
+    [SerializeField] protected Animator enemyAnimator;
 
     private bool followingPlayer;
 
@@ -28,7 +30,7 @@ public class Enemy : MonoBehaviour, IShootable
         playerLoc = GameManager.instance.player.transform;
     }
 
-    void Update()
+    public virtual void Update()
     {
         // If the player is out of range of the enemy, return to spawn
         if( Vector3.Distance( transform.position, playerLoc.position ) >= leashDistance ){
@@ -40,9 +42,11 @@ public class Enemy : MonoBehaviour, IShootable
 
         if(followingPlayer){
             enemyAgent.SetDestination(playerLoc.position);
+            // enemyAgent.isStopped = false;
         }
         else{
             enemyAgent.SetDestination(spawnPoint.transform.position);
+            // enemyAgent.isStopped = true;
         }        
     }
 
