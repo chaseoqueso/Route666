@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class GameUIManager : MonoBehaviour
 
     public Slider ruckusMeter;
     public Image ruckusMeterFill;
+
+    public TextMeshProUGUI speedometer;
 
     void Awake()
     {
@@ -38,6 +41,14 @@ public class GameUIManager : MonoBehaviour
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+    }
+
+    public void SetSpeedometer(float speed, Color color)
+    {
+        string numeralStr = "" + (int)speed;
+        string decimalStr = "" + (int)((speed % 1) * 10);
+        speedometer.text = "Speed\n<i>" + numeralStr + "." + decimalStr + " MPH</i>";
+        speedometer.color = color;
     }
 
     #region Ruckus Meter
