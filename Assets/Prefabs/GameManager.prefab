@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8016123294623799725}
   - component: {fileID: 8777230145975514826}
   - component: {fileID: 4577362720269770111}
+  - component: {fileID: 4614647369963210115}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -47,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   UIManager: {fileID: 0}
-  enemySpawnManager: {fileID: 0}
+  enemyMaterialsData: {fileID: 4614647369963210115}
 --- !u!114 &4577362720269770111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,3 +66,15 @@ MonoBehaviour:
   masterVolume: 1
   musicVolume: 1
   sfxVolume: 1
+--- !u!114 &4614647369963210115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8015195527919149275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d1b1374f47076547b45648a8d0f7d6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

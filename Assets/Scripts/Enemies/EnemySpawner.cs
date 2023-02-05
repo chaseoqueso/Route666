@@ -66,7 +66,7 @@ public class EnemySpawner : MonoBehaviour
     void Update()
     {
         // If the player is out of range of the spawner, spawn more enemies
-        if( Vector3.Distance( transform.position, playerLoc.position ) >= spawnDistanceFromPlayer ){
+        if( Vector3.Distance( transform.position, playerLoc.position ) >= spawnDistanceFromPlayer ){    // totalActiveEnemies < targetActiveEnemies &&
             SpawnEnemies();
         }
     }
@@ -83,6 +83,8 @@ public class EnemySpawner : MonoBehaviour
             newEnemy.GetComponent<Enemy>().spawnPoint = this;
             newEnemy.GetComponent<Enemy>().playerLoc = playerLoc;
 
+            RandomlyGeneratePunkEnemyAppearance(newEnemy);
+
             UpdatePopOnNewSpawn();
         }
     }
@@ -98,4 +100,112 @@ public class EnemySpawner : MonoBehaviour
     {
         totalActiveEnemies++;
     }
+
+    #region Random Punk Enemy Appearance Generation
+        private void RandomlyGeneratePunkEnemyAppearance(GameObject newEnemy)
+        {
+            SkinnedMeshRenderer[] meshRenderers = newEnemy.GetComponentsInChildren<SkinnedMeshRenderer>();
+
+            // Pick skin mat out here so that it can be the same for all categories
+            Material skinMat = ChooseRandomSkinMat();
+
+            foreach(SkinnedMeshRenderer meshRenderer in meshRenderers){
+                string objectName = meshRenderer.gameObject.name;
+
+                // Have to assign the entire array at once
+                // so store a local version to make changes to and then replace it on the object at the end
+                Material[] localMatArray = meshRenderer.materials;
+                
+                switch(objectName){
+                    case "Punk_Body":
+                        localMatArray[0] = ChooseRandomClothesMat();    // vest
+                        localMatArray[1] = ChooseRandomClothesMat();    // shirt
+                        localMatArray[2] = skinMat;                     // skin
+
+                        break;
+
+                    case "Punk_Feet":
+                        localMatArray[0] = ChooseRandomClothesMat();    // shoes
+                        localMatArray[1] = skinMat;                     // skin
+
+                        break;
+
+                    case "Punk_Head":
+                        Material hairMat = ChooseRandomHairMat();
+                        
+                        localMatArray[0] = skinMat;                     // skin
+                        localMatArray[1] = hairMat;                     // hair
+                        localMatArray[2] = ChooseRandomEarringsMat();   // earrings
+                        localMatArray[3] = hairMat;                     // hair
+
+                        break;
+
+                    case "Punk_Legs":
+                        localMatArray[0] = ChooseRandomClothesMat();    // pants
+                        localMatArray[1] = skinMat;                     // skin
+
+                        break;
+
+                    default:
+                        Debug.LogError("No case found for object name: " + objectName);
+                        break;
+                }
+
+                meshRenderer.materials = localMatArray;
+            }
+        }
+
+        // Clothes AND hair mats are both included in this category
+        private Material ChooseRandomClothesMat()
+        {
+            List<Material> clothesMats = GameManager.instance.enemyMaterialsData.GetPunkClothesMats();
+
+            if(clothesMats.Count < 1){
+                Debug.LogError("No punk enemy clothes materials found");
+                return null;
+            }
+            
+            int index = Random.Range(0, clothesMats.Count-1);
+            return clothesMats[index];
+        }
+
+        private Material ChooseRandomSkinMat()
+        {
+            List<Material> skinMats = GameManager.instance.enemyMaterialsData.GetPunkSkinMats();
+
+            if(skinMats.Count < 1){
+                Debug.LogError("No punk enemy skin materials found");
+                return null;
+            }
+            
+            int index = Random.Range(0, skinMats.Count-1);
+            return skinMats[index];
+        }
+
+        private Material ChooseRandomHairMat()
+        {
+            List<Material> hairMats = GameManager.instance.enemyMaterialsData.GetPunkHairMats();
+
+            if(hairMats.Count < 1){
+                Debug.LogError("No punk enemy hair materials found");
+                return null;
+            }
+            
+            int index = Random.Range(0, hairMats.Count-1);
+            return hairMats[index];
+        }
+
+        private Material ChooseRandomEarringsMat()
+        {
+            List<Material> earringsMats = GameManager.instance.enemyMaterialsData.GetPunkEarringsMats();
+
+            if(earringsMats.Count < 1){
+                Debug.LogError("No punk enemy clothes materials found");
+                return null;
+            }
+            
+            int index = Random.Range(0, earringsMats.Count-1);
+            return earringsMats[index];
+        }
+    #endregion
 }
