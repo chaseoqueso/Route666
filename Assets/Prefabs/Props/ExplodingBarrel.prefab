@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5ae75ce67674d7149a1d6e7e16c10e9b, type: 2}
+  - {fileID: 2100000, guid: b947947803dfcab47961d30c6f5ebbf6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,6 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRange: 2
+  damageValue: 1
   explodableLayerMask:
     serializedVersion: 2
     m_Bits: 384
