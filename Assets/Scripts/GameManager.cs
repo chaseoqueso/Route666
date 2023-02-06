@@ -91,6 +91,17 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(sceneName);
             currentScene = sceneName;
 
+            if(currentScene == MAIN_MENU_SCENE_NAME)
+            {
+                AudioManager.instance.StopMusic();
+                AudioManager.instance.PlayMusic(AudioManager.MusicType.MainMenu);
+            }
+
+            if(currentScene == INTRO_SCENE_NAME)
+            {
+                AudioManager.instance.StopMusic();
+            }
+
             if(currentScene == LEVEL_1_SCENE_NAME)
             {
                 AudioManager.instance.StopMusic();
