@@ -38,7 +38,7 @@ MonoBehaviour:
   Path: FMOD/Route666/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638112068703119155
+  lastModified: 638112065973585474
   FileSizes:
   - Name: Desktop
     Value: 1914560
@@ -60,13 +60,13 @@ MonoBehaviour:
   - {fileID: -4106544572438805235}
   EditorEvents:
   - {fileID: -7162723211331617037}
-  - {fileID: 7865383818192030418}
+  - {fileID: 6189696239286291946}
   EditorParameters: []
   MasterBanks:
   - {fileID: -4106544572438805235}
   StringsBanks:
   - {fileID: 205901662813285426}
-  stringsBankWriteTime: 638112068703129136
+  stringsBankWriteTime: 638112065973605434
   cacheVersion: 8
 --- !u!114 &205901662813285426
 MonoBehaviour:
@@ -83,12 +83,12 @@ MonoBehaviour:
   Path: FMOD/Route666/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638112068703129136
+  lastModified: 638112065973605434
   FileSizes:
   - Name: Desktop
     Value: 936
   Exists: 1
---- !u!114 &7865383818192030418
+--- !u!114 &6189696239286291946
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

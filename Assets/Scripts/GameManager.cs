@@ -121,6 +121,8 @@ public class GameManager : MonoBehaviour
                     break;
             }
 
+            Debug.Log("increasing ruckus by " + value);
+
             ruckusPoints += value;
 
             if(ruckusPoints >= maxRuckusMeter){

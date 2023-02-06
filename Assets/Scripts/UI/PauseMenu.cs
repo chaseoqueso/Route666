@@ -8,10 +8,14 @@ public class PauseMenu : MonoBehaviour
     public GameObject pauseMenuUI;
     public static bool gameIsPaused;
 
+    [SerializeField] private GameObject controlsUI;
+    private bool controlsUIActive;
+
     void Start()
     {
         gameIsPaused = false;
         GameManager.instance.UIManager.SetCursorActive(false);
+        controlsUIActive = false;
     }
 
     public void PauseGame()
@@ -30,10 +34,20 @@ public class PauseMenu : MonoBehaviour
 
         pauseMenuUI.SetActive(false);
         gameIsPaused = false;
+
+        if(controlsUIActive){
+            ToggleControlsUI();
+        }
     }
 
     public void ReturnToMenu()
     {
         GameManager.instance.ChangeScene(GameManager.MAIN_MENU_SCENE_NAME);
+    }
+
+    public void ToggleControlsUI()
+    {
+        controlsUIActive = !controlsUIActive;
+        controlsUI.SetActive(controlsUIActive);
     }
 }

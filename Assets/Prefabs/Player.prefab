@@ -253,7 +253,7 @@ MonoBehaviour:
   acceleration: 14
   brakeStrength: 8
   maxVelocity: 16
-  highVelocity: 12
+  highVelocity: 14
   maxTurnAngle: 90
   maxTurnChange: 270
   maxLeanAngle: 15

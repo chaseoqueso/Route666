@@ -19,7 +19,6 @@ public class LoadEnemyMaterials : MonoBehaviour
         Object[] punkHairMatList = Resources.LoadAll("PunkEnemy/Hair", typeof(Material));
         foreach(Object m in punkHairMatList){
             punkHairMaterials.Add( (Material)m );
-            punkClothesMaterials.Add( (Material)m );
         }
 
         Object[] punkSkinMatList = Resources.LoadAll("PunkEnemy/Skin", typeof(Material));

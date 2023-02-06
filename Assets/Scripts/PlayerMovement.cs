@@ -334,6 +334,9 @@ public class PlayerMovement : MonoBehaviour
                 pushVelocity = pushVelocity.normalized * (pushVelocity.magnitude - acceleration * Time.fixedDeltaTime);    // Reduce pushVelocity strength
             }
         }
+
+        Color speedometerColor = velocity >= highVelocity ? new Color(1, 0.5f, 0, 1) : Color.white;
+        GameManager.instance.UIManager.SetSpeedometer(velocity * 2.23694f, speedometerColor);
     } 
 
     private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit)
@@ -549,7 +552,7 @@ public class PlayerMovement : MonoBehaviour
 
             anim.SetTrigger("Shoot");   // Trigger the shoot animation
             Bullet bulletScript = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity).GetComponent<Bullet>();
-            bulletScript.Initialize(bulletDirection.normalized * 150, 100);
+            bulletScript.Initialize(bulletDirection.normalized * 200, 100);
 
             // Activate muzzle flare
             muzzleFlare.SetActive(true);
