@@ -22,7 +22,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 0
   MaxDistance: 0
-  Length: 0
+  Length: 46000
 --- !u!114 &-4106544572438805235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38,10 +38,10 @@ MonoBehaviour:
   Path: FMOD/Route666/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638109688632828494
+  lastModified: 638112072340669559
   FileSizes:
   - Name: Desktop
-    Value: 608352
+    Value: 1914560
   Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -60,12 +60,13 @@ MonoBehaviour:
   - {fileID: -4106544572438805235}
   EditorEvents:
   - {fileID: -7162723211331617037}
+  - {fileID: 432701334948900482}
   EditorParameters: []
   MasterBanks:
   - {fileID: -4106544572438805235}
   StringsBanks:
   - {fileID: 205901662813285426}
-  stringsBankWriteTime: 638109688632838466
+  stringsBankWriteTime: 638112072340674525
   cacheVersion: 8
 --- !u!114 &205901662813285426
 MonoBehaviour:
@@ -82,8 +83,31 @@ MonoBehaviour:
   Path: FMOD/Route666/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638109688632838466
+  lastModified: 638112072340674525
   FileSizes:
   - Name: Desktop
-    Value: 882
+    Value: 936
   Exists: 1
+--- !u!114 &432701334948900482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/GreezeyGulch
+  m_EditorClassIdentifier: 
+  Path: event:/GreezeyGulch
+  guid: 968f3a30f497144a895bb0745eab6232
+  Banks:
+  - {fileID: -4106544572438805235}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 92000
