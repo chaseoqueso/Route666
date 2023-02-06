@@ -7,11 +7,11 @@ public class Cutscene : MonoBehaviour
 {
     // Frames
     public List<Sprite> frames;
-    public List<int> timings;
+    public List<float> timings;
     public Image target;
     public bool isRunning;
     private bool isFinished;
-    private int timer;
+    private float timer;
     private int cutsceneIndex;
 
     // Start is called before the first frame update
@@ -51,7 +51,7 @@ public class Cutscene : MonoBehaviour
             }
 
             // are we done with this frame? 
-            else if (timer >= timings[cutsceneIndex] / Time.deltaTime)
+            else if (timer >= timings[cutsceneIndex])
             {
                 // advance frame and reset timer
                 cutsceneIndex++;
@@ -61,7 +61,7 @@ public class Cutscene : MonoBehaviour
             // nah, keep displaying same frame and increment timer
             else
             {
-                timer++;
+                timer += Time.deltaTime;
             }
         }
     }
