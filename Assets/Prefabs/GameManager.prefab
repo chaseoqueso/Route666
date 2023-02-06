@@ -62,9 +62,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenuMusicTrack: event:/MenuMusic
-  greezeyGulchMusicTrack: event:/GreezeyGulch
+  level1MusicTrack: event:/GreezeyGulch
   menuSelectEvent: 
-  masterVolume: 1
+  masterVolume: 0.5
   musicVolume: 1
   sfxVolume: 1
 --- !u!114 &4614647369963210115

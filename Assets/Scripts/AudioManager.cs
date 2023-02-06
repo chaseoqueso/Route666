@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Music Tracks")]
     [FMODUnity.EventRef] public string mainMenuMusicTrack;
-    [FMODUnity.EventRef] public string greezeyGulchMusicTrack;
+    [FMODUnity.EventRef] public string level1MusicTrack;
 
     [Header("Sound Effects")]
     [FMODUnity.EventRef] public string menuSelectEvent;
@@ -75,13 +75,11 @@ public class AudioManager : MonoBehaviour
     private FMOD.Studio.EventInstance musicInstance;
     private FMOD.Studio.EventInstance sfxInstance;
 
-    private bool isInCharacterSelect;
     private bool pauseMuffle;
 
-    void Start()
+    void Awake()
     {
         instance = this;
-        isInCharacterSelect = false;
 
         masterVCA = FMODUnity.RuntimeManager.GetVCA(masterVCAPath);
         masterVCA.setVolume(masterVolume);
@@ -93,7 +91,7 @@ public class AudioManager : MonoBehaviour
         sfxVCA.setVolume(sfxVolume);
     }
 
-    public void playMusic(MusicType musicTrack, int zone = -1)
+    public void PlayMusic(MusicType musicTrack, int zone = -1)
     {
         StopAllCoroutines();
         switch(musicTrack)
@@ -102,28 +100,33 @@ public class AudioManager : MonoBehaviour
                 musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
                 musicInstance = FMODUnity.RuntimeManager.CreateInstance(mainMenuMusicTrack);
                 musicInstance.start();
-                isInCharacterSelect = false;
+                break;
+                
+            case MusicType.Level1:
+                musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+                musicInstance = FMODUnity.RuntimeManager.CreateInstance(level1MusicTrack);
+                musicInstance.start();
                 break;
         }
     }
 
-    public void stopMusic()
+    public void StopMusic()
     {
         musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         StopAllCoroutines();
     }
 
-    public void playSound(SFXType soundEffect)
+    public void PlaySound(SFXType soundEffect)
     {
         switch(soundEffect)
         {
             case SFXType.MenuSelect:
-                soundEffectHelper(menuSelectEvent);
+                SoundEffectHelper(menuSelectEvent);
                 break;
         }
     }
 
-    public void setPauseMuffle(bool shouldMuffle)
+    public void SetPauseMuffle(bool shouldMuffle)
     {
         if(pauseMuffle != shouldMuffle)
         {
@@ -132,7 +135,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void soundEffectHelper(string eventPath)
+    private void SoundEffectHelper(string eventPath)
     {
         sfxInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         sfxInstance = FMODUnity.RuntimeManager.CreateInstance(eventPath);

@@ -75,6 +75,11 @@ public class GameManager : MonoBehaviour
         ruckusDecayDelay = 2f;
     }
 
+    void Start() 
+    {
+        AudioManager.instance.PlayMusic(AudioManager.MusicType.MainMenu);
+    }
+
     public void SetHorseName(string input)
     {
         horseName = input;
@@ -85,6 +90,12 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene(sceneName);
             currentScene = sceneName;
+
+            if(currentScene == LEVEL_1_SCENE_NAME)
+            {
+                AudioManager.instance.StopMusic();
+                AudioManager.instance.PlayMusic(AudioManager.MusicType.Level1);
+            }
 
             ruckusDecayRoutine = null;
         }
