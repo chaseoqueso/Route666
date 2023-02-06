@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DeathScreen : MonoBehaviour
 {
     public GameObject deathUI;
     public static bool deathUIActive;
+
+    [SerializeField] private Button continueButton;
 
     public void ActivateDeathUI()
     {
@@ -14,6 +17,8 @@ public class DeathScreen : MonoBehaviour
 
         deathUI.SetActive(true);
         deathUIActive = true;
+
+        continueButton.GetComponent<UIButtonFixer>().SelectOnMenuSwitch();
     }
 
     public void ContinueGame()

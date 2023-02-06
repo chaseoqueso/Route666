@@ -5,11 +5,18 @@ using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
+    [Tooltip("The whole parent pause menu with the dark background")]
     public GameObject pauseMenuUI;
+    [Tooltip("JUST the panel with the pause and pause buttons, not controls")]
+    [SerializeField] private GameObject pausePanel;
+
     public static bool gameIsPaused;
 
     [SerializeField] private GameObject controlsUI;
     private bool controlsUIActive;
+
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button controlsBackButton;
 
     void Start()
     {
@@ -25,6 +32,8 @@ public class PauseMenu : MonoBehaviour
 
         pauseMenuUI.SetActive(true);
         gameIsPaused = true;
+
+        resumeButton.GetComponent<UIButtonFixer>().SelectOnMenuSwitch();
     }
 
     public void ResumeGame()
@@ -49,5 +58,14 @@ public class PauseMenu : MonoBehaviour
     {
         controlsUIActive = !controlsUIActive;
         controlsUI.SetActive(controlsUIActive);
+
+        pausePanel.SetActive(!controlsUIActive);
+
+        if(controlsUIActive){
+            controlsBackButton.GetComponent<UIButtonFixer>().SelectOnMenuSwitch();
+        }
+        else{
+            resumeButton.GetComponent<UIButtonFixer>().SelectOnMenuSwitch();
+        }
     }
 }

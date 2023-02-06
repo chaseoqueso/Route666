@@ -819,7 +819,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuUI: {fileID: 6028679761642915279}
+  pausePanel: {fileID: 4552231884274156386}
   controlsUI: {fileID: 4292063765476789505}
+  resumeButton: {fileID: 473990491029653647}
+  controlsBackButton: {fileID: 5224382842102005100}
 --- !u!114 &5648382523041624748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -833,6 +836,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelClearUI: {fileID: 2772953608748129766}
+  continueButton: {fileID: 3476485625836541717}
 --- !u!114 &6767504991051603015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -846,6 +850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathUI: {fileID: 1161582878271782364}
+  continueButton: {fileID: 2429695932797975762}
 --- !u!1 &2997966010942966754
 GameObject:
   m_ObjectHideFlags: 0

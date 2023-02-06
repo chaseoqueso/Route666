@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LevelClearUI : MonoBehaviour
 {
     public GameObject levelClearUI;
     public static bool levelClearUIActive;
+
+    [SerializeField] private Button continueButton;
 
     public void ActivateLevelClearUI()
     {
@@ -14,6 +17,8 @@ public class LevelClearUI : MonoBehaviour
 
         levelClearUI.SetActive(true);
         levelClearUIActive = true;
+
+        continueButton.GetComponent<UIButtonFixer>().SelectOnMenuSwitch();
     }
 
     public void ContinueGame()

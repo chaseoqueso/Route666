@@ -6,6 +6,8 @@ using TMPro;
 
 public class CustomizeHorseMenu : MonoBehaviour
 {
+    // DOES THIS NEED DEFAULT HORSESHOE STATE???
+
     [SerializeField] private Button continueButton;
     [SerializeField] private TMP_Text continueButtonText;
     [SerializeField] private TMP_InputField nameInputField;
