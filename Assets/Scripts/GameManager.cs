@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     // public EnemySpawnManager spawnManager;
     public GameUIManager UIManager;
 
+    public GameObject buttonIconPrefab;
+
     #region Ruckus
         public int ruckusPoints {get; private set;}
         public int maxRuckusMeter {get; private set;}

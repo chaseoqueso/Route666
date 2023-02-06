@@ -11,7 +11,7 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
-        ActivateDefaultHorseshoe();
+        // ActivateDefaultHorseshoe();
     }
 
     public void ActivateDefaultHorseshoe()

@@ -6,17 +6,17 @@ using UnityEngine.UI;
 public class ButtonIcon : MonoBehaviour
 {
     [SerializeField] private Image icon;
-    public bool iconIsActive {get; private set;}
+    // public bool iconIsActive {get; private set;}
 
-    void Awake()
-    {
-        ToggleIcon(false);
-    }
+    // void Awake()
+    // {
+    //     ToggleIcon(false);
+    // }
 
     public void ToggleIcon(bool set)
     {
-        iconIsActive = set;
-        UIUtils.SetImageVisible( icon, set );
+        // iconIsActive = set;
+        // UIUtils.SetImageVisible( icon, set );
 
         // if(set){
         //     icon.color = new Color(255,255,255,255);
@@ -24,5 +24,7 @@ public class ButtonIcon : MonoBehaviour
         // else{
         //     icon.color = new Color(255,255,255,0);
         // }
+
+        
     }
 }

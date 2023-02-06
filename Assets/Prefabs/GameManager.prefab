@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   UIManager: {fileID: 0}
+  buttonIconPrefab: {fileID: 1956989704951079373, guid: b635fd641fdbdc94ea6e98541175d5aa, type: 3}
   enemyMaterialsData: {fileID: 4614647369963210115}
 --- !u!114 &4577362720269770111
 MonoBehaviour:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(Selectable))]
 public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler, IDeselectHandler, IPointerClickHandler, ISubmitHandler
@@ -12,12 +13,16 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     
     // [FMODUnity.EventRef] public string buttonClickSFXOverride;
 
-    private ButtonIcon buttonIcon;
+    private GameObject buttonIcon;
 
     private void SetIconIfNull()
     {
         if(!buttonIcon){
-            buttonIcon = GetComponentInChildren<ButtonIcon>();
+            buttonIcon = Instantiate( GameManager.instance.buttonIconPrefab, Vector2.zero, Quaternion.identity, GetComponentInChildren<TMP_Text>().transform );
+
+            RectTransform parentTransform = buttonIcon.transform.parent.GetComponent<RectTransform>();
+            float xVal = - parentTransform.rect.width / 2 - 40;
+            buttonIcon.GetComponent<RectTransform>().localPosition = new Vector2( xVal, 0 );
         }
     }
 
@@ -28,7 +33,7 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
             // TriggerHoverSFX();
 
             SetIconIfNull();
-            buttonIcon.ToggleIcon(true);
+            ToggleButtonIcon(true);
         }
     }
 
@@ -37,14 +42,14 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         // TriggerClickSFX();
 
         SetIconIfNull();
-        buttonIcon.ToggleIcon(false);
+        ToggleButtonIcon(false);
     }
 
     public void OnSelect(BaseEventData eventData)
     {
         // TriggerHoverSFX();
         SetIconIfNull();
-        buttonIcon.ToggleIcon(true);
+        ToggleButtonIcon(true);
     }
 
     public void OnDeselect(BaseEventData eventData)
@@ -52,7 +57,7 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         this.GetComponent<Selectable>().OnPointerExit(null);
 
         SetIconIfNull();
-        buttonIcon.ToggleIcon(false);
+        ToggleButtonIcon(false);
     }
 
     public void OnSubmit(BaseEventData eventData)
@@ -60,7 +65,7 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         // TriggerClickSFX();
 
         SetIconIfNull();
-        buttonIcon.ToggleIcon(false);
+        ToggleButtonIcon(false);
     }
 
     private void TriggerHoverSFX()
@@ -87,6 +92,11 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         GetComponent<Selectable>().Select();
         
         SetIconIfNull();
-        buttonIcon.ToggleIcon(true);
+        ToggleButtonIcon(true);
+    }
+
+    public void ToggleButtonIcon(bool set)
+    {
+        buttonIcon.SetActive(set);
     }
 }
