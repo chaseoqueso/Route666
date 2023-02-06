@@ -108,10 +108,16 @@ public class EnemySpawner : MonoBehaviour
     #region Random Punk Enemy Appearance Generation
         private void RandomlyGeneratePunkEnemyAppearance(GameObject newEnemy)
         {
-            SkinnedMeshRenderer[] meshRenderers = newEnemy.GetComponentsInChildren<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer[] meshRenderers = newEnemy.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
             // Pick skin mat out here so that it can be the same for all categories
             Material skinMat = ChooseRandomSkinMat();
+            Material vestMat = ChooseRandomClothesMat();
+            Material shirtMat = ChooseRandomClothesMat();
+            Material shoesMat = ChooseRandomClothesMat();
+            Material hairMat = ChooseRandomHairMat();
+            Material earringMat = ChooseRandomEarringsMat();
+            Material pantsMat = ChooseRandomClothesMat();
 
             foreach(SkinnedMeshRenderer meshRenderer in meshRenderers){
                 string objectName = meshRenderer.gameObject.name;
@@ -122,30 +128,28 @@ public class EnemySpawner : MonoBehaviour
                 
                 switch(objectName){
                     case "Punk_Body":
-                        localMatArray[0] = ChooseRandomClothesMat();    // vest
-                        localMatArray[1] = ChooseRandomClothesMat();    // shirt
+                        localMatArray[0] = vestMat;                     // vest
+                        localMatArray[1] = shirtMat;                    // shirt
                         localMatArray[2] = skinMat;                     // skin
 
                         break;
 
                     case "Punk_Feet":
-                        localMatArray[0] = ChooseRandomClothesMat();    // shoes
+                        localMatArray[0] = shoesMat;                    // shoes
                         localMatArray[1] = skinMat;                     // skin
 
                         break;
 
                     case "Punk_Head":
-                        Material hairMat = ChooseRandomHairMat();
-                        
                         localMatArray[0] = skinMat;                     // skin
                         localMatArray[1] = hairMat;                     // hair
-                        localMatArray[2] = ChooseRandomEarringsMat();   // earrings
+                        localMatArray[2] = earringMat;                  // earrings
                         localMatArray[3] = hairMat;                     // hair
 
                         break;
 
                     case "Punk_Legs":
-                        localMatArray[0] = ChooseRandomClothesMat();    // pants
+                        localMatArray[0] = pantsMat;                    // pants
                         localMatArray[1] = skinMat;                     // skin
 
                         break;
