@@ -175,6 +175,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f3cd9ab8e836741b7051379b6eae54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playButton: {fileID: 1595809962}
+  creditsBackButton: {fileID: 1266120975}
+  controlsBackButton: {fileID: 244535671}
 --- !u!114 &2900444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,6 +708,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2900443}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: ActivateDefaultHorseshoe
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &244535672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1005,6 +1020,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2900443}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: ActivateCreditsHorseshoe
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1545,6 +1572,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2900443}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: ActivateDefaultHorseshoe
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2823,6 +2862,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2900443}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: ActivateControlsHorseshoe
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

@@ -12,32 +12,55 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
     
     // [FMODUnity.EventRef] public string buttonClickSFXOverride;
 
+    private ButtonIcon buttonIcon;
+
+    private void SetIconIfNull()
+    {
+        if(!buttonIcon){
+            buttonIcon = GetComponentInChildren<ButtonIcon>();
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!EventSystem.current.alreadySelecting){
             EventSystem.current.SetSelectedGameObject(this.gameObject);
             // TriggerHoverSFX();
+
+            SetIconIfNull();
+            buttonIcon.ToggleIcon(true);
         }
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         // TriggerClickSFX();
+
+        SetIconIfNull();
+        buttonIcon.ToggleIcon(false);
     }
 
     public void OnSelect(BaseEventData eventData)
     {
         // TriggerHoverSFX();
+        SetIconIfNull();
+        buttonIcon.ToggleIcon(true);
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
         this.GetComponent<Selectable>().OnPointerExit(null);
+
+        SetIconIfNull();
+        buttonIcon.ToggleIcon(false);
     }
 
     public void OnSubmit(BaseEventData eventData)
     {
         // TriggerClickSFX();
+
+        SetIconIfNull();
+        buttonIcon.ToggleIcon(false);
     }
 
     private void TriggerHoverSFX()
@@ -56,5 +79,14 @@ public class UIButtonFixer : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         //         AudioManager.Instance.PlaySFX(AudioManager.SFX.ButtonClick);
         //     }            
         // }
+    }
+
+    // For each menu, do Button.GetComponent<UIButtonFixer>().SelectOnMenuSwitch(); when going to that menu
+    public void SelectOnMenuSwitch()
+    {
+        GetComponent<Selectable>().Select();
+        
+        SetIconIfNull();
+        buttonIcon.ToggleIcon(true);
     }
 }
