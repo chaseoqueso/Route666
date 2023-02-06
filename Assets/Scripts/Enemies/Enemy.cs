@@ -27,6 +27,8 @@ public enum EnemyState{
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour, IShootable
 {
+    public static List<GameObject> ragdollList;
+
     protected EnemyState enemyState = EnemyState.Idle;
 
     [SerializeField] protected int maxHealth = 1;
@@ -48,6 +50,9 @@ public class Enemy : MonoBehaviour, IShootable
     [SerializeField] protected float walkSpeed = 2.5f;
     [Tooltip("IGNORE SPEED IN THE NavAgent COMPONENT - use this instead")]
     [SerializeField] protected float runSpeed = 3.5f;
+    
+    [Tooltip("The ragdoll model of the enemy")]
+    [SerializeField] protected GameObject ragdoll;
 
     [SerializeField] protected float idleDurationInSeconds = 5;
     protected Coroutine idleRoutine;
@@ -60,6 +65,9 @@ public class Enemy : MonoBehaviour, IShootable
 
     void Awake()
     {
+        if(ragdollList == null)
+            ragdollList = new List<GameObject>();
+
         currentHealth = maxHealth;
         playerLoc = GameManager.instance.player.transform;
 
@@ -97,6 +105,20 @@ public class Enemy : MonoBehaviour, IShootable
                 if(currentHealth <= 0){
                     spawnPoint.UpdatePopOnEnemyDeath();
                     GameManager.instance.IncreaseRuckusValue(killType);
+
+                    Destroy(gameObject, 10);
+
+                    ragdoll.SetActive(true);
+                    ragdoll.transform.parent = null;
+                    ragdoll.GetComponentInChildren<Rigidbody>().velocity = ((transform.position - playerLoc.position).normalized * 15 + Vector3.up * 10);
+
+                    ragdollList.Insert(0, ragdoll);
+                    while(ragdollList.Count > 10)
+                    {
+                        Destroy(ragdollList[10]);
+                        ragdollList.RemoveAt(10);
+                    }
+
                     Destroy(gameObject);
                 }
             }
