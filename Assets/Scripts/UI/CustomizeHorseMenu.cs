@@ -6,8 +6,19 @@ using TMPro;
 
 public class CustomizeHorseMenu : MonoBehaviour
 {
-    [SerializeField] private TMP_Text nameText;
     [SerializeField] private Button continueButton;
+    [SerializeField] private TMP_Text continueButtonText;
+    [SerializeField] private TMP_InputField nameInputField;
+
+    [SerializeField] private Color buttonActiveColor;
+    [SerializeField] private Color buttonDisabledColor;
+
+    void Start()
+    {
+        nameInputField.onValueChanged.AddListener(delegate{
+            OnHorseNameInputChanged();
+        });
+    }
 
     public void ContinueClicked()
     {
@@ -20,16 +31,21 @@ public class CustomizeHorseMenu : MonoBehaviour
 
     public void SaveCustomization()
     {
-        GameManager.instance.SetHorseName(nameText.text);
+        GameManager.instance.SetHorseName(nameInputField.text);
+        Debug.Log("horse name saved as: " + GameManager.instance.horseName);
     }
 
-    public void CheckForValidHorseName()
+    public void OnHorseNameInputChanged()
     {
-        if(nameText.text == ""){
+        if(nameInputField.text == ""){
             continueButton.interactable = false;
+            continueButtonText.color = buttonDisabledColor;
         }
         else{
+            nameInputField.text = nameInputField.text.ToUpper();
+
             continueButton.interactable = true;
+            continueButtonText.color = buttonActiveColor;
         }
     }
 
