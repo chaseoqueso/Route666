@@ -26,8 +26,7 @@ public class CustomizeHorseMenu : MonoBehaviour
 
         Debug.Log("(assign scene to transition to)");
 
-        // TODO: Tell the Game Manager to go to the intro cutscene and the level 1
-        // GameManager.instance.ChangeScene(GameManager.INTRO_SCENE_NAME);
+        GameManager.instance.ChangeScene(GameManager.INTRO_SCENE_NAME);
     }
 
     public void SaveCustomization()
