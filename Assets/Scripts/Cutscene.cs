@@ -35,6 +35,7 @@ public class Cutscene : MonoBehaviour
     {
         isRunning = false;
         isFinished = true;
+        GameManager.instance.ChangeScene(GameManager.LEVEL_1_SCENE_NAME);
     }
 
     // Update is called once per frame
