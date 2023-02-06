@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string CUSTOMIZE_HORSE_SCENE_NAME = "CustomizeHorseUI";
         public const string INTRO_SCENE_NAME = "IntroCutscene";
-        public const string LEVEL_1_SCENE_NAME = "Level1";
+        public const string LEVEL_1_SCENE_NAME = "Greezy Gulch Proto";
     #endregion
 
     public Player player;

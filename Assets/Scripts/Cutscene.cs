@@ -12,7 +12,7 @@ public class Cutscene : MonoBehaviour
     public bool isRunning;
     private bool isFinished;
     private int timer;
-    private int index;
+    private int cutsceneIndex;
 
     // Start is called before the first frame update
     void Start()
@@ -20,13 +20,13 @@ public class Cutscene : MonoBehaviour
         isRunning = false;
         isFinished = false;
         timer = 0;
-        index = 0;
+        cutsceneIndex = 0;
+        BeginCutscene();
     }
 
     void BeginCutscene()
     {
         isRunning = true;
-        index = 0;
         target.sprite = frames[0];
         target.preserveAspect = true;
     }
@@ -35,30 +35,27 @@ public class Cutscene : MonoBehaviour
     {
         isRunning = false;
         isFinished = true;
+        cutsceneIndex = 0;
         GameManager.instance.ChangeScene(GameManager.LEVEL_1_SCENE_NAME);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isRunning && !isFinished)
-        {
-            BeginCutscene();
-        }
-        if (isRunning)
+        if (isRunning && !isFinished)
         {
             // are we at the end of the cutscene?
-            if (index + 1 > frames.Count)
+            if (cutsceneIndex + 1 > frames.Count - 1)
             {
                 EndCutscene();
             }
 
             // are we done with this frame? 
-            if (timer >= timings[index] / Time.deltaTime)
+            else if (timer >= timings[cutsceneIndex] / Time.deltaTime)
             {
                 // advance frame and reset timer
-                index++;
-                target.sprite = frames[index];
+                cutsceneIndex++;
+                target.sprite = frames[cutsceneIndex];
                 timer = 0;
             }
             // nah, keep displaying same frame and increment timer
