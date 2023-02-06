@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string CUSTOMIZE_HORSE_SCENE_NAME = "CustomizeHorseUI";
         public const string INTRO_SCENE_NAME = "IntroCutscene";
-        public const string LEVEL_1_SCENE_NAME = "Level1";
+        public const string LEVEL_1_SCENE_NAME = "Greezy Gulch Proto";
     #endregion
 
     public Player player;
@@ -77,6 +77,11 @@ public class GameManager : MonoBehaviour
         ruckusDecayDelay = 2f;
     }
 
+    void Start() 
+    {
+        AudioManager.instance.PlayMusic(AudioManager.MusicType.MainMenu);
+    }
+
     public void SetHorseName(string input)
     {
         horseName = input;
@@ -87,6 +92,23 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene(sceneName);
             currentScene = sceneName;
+
+            if(currentScene == MAIN_MENU_SCENE_NAME)
+            {
+                AudioManager.instance.StopMusic();
+                AudioManager.instance.PlayMusic(AudioManager.MusicType.MainMenu);
+            }
+
+            if(currentScene == INTRO_SCENE_NAME)
+            {
+                AudioManager.instance.StopMusic();
+            }
+
+            if(currentScene == LEVEL_1_SCENE_NAME)
+            {
+                AudioManager.instance.StopMusic();
+                AudioManager.instance.PlayMusic(AudioManager.MusicType.Level1);
+            }
 
             ruckusDecayRoutine = null;
         }
