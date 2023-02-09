@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     
     public int gunDamage = 1;
     public int motorcycleImpactDamage = 1;
+    public float invulnerabilityTimer = 2;
+    public bool canTakeDamage = true;
 
     void Awake()
     {
@@ -35,16 +37,24 @@ public class Player : MonoBehaviour
 
         public virtual void TakeDamage(int damageValue)
         {
-            currentHealth -= damageValue;
+            if(canTakeDamage)
+            {
+                currentHealth -= damageValue;
 
-            for(int i = 0; i < damageValue; i++){
-                GameManager.instance.UIManager.healthUI.RemoveHealth();
-            }
+                for(int i = 0; i < damageValue; i++){
+                    GameManager.instance.UIManager.healthUI.RemoveHealth();
+                }
 
-            if(currentHealth <= 0){
-                // TODO: Uncomment this later when it's not horribly inconvenient
-                GameManager.instance.UIManager.deathUI.ActivateDeathUI();
-                Debug.Log("you're dead (trust me)");
+                if(currentHealth <= 0){
+                    GameManager.instance.UIManager.deathUI.ActivateDeathUI();
+                }
+
+                canTakeDamage = false;
+                IEnumerator hitTimer() {
+                    yield return new WaitForSeconds(invulnerabilityTimer);
+                    canTakeDamage = true;
+                }
+                StartCoroutine(hitTimer());
             }
         }
 
