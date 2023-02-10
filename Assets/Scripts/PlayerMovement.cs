@@ -318,7 +318,7 @@ public class PlayerMovement : MonoBehaviour
         if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight, capsuleCenter + capsuleHalfHeight, coll.radius,
                                moveVector, out hit, moveVector.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment")))   // If we hit something
         {
-            OnCollision(moveVector, groundStickVector, hit);   // Handle the collision
+            OnCollision(moveVector, groundStickVector, hit, 0);   // Handle the collision
         }
         else
         {
@@ -339,7 +339,7 @@ public class PlayerMovement : MonoBehaviour
         GameManager.instance.UIManager.SetSpeedometer(velocity * 2.23694f, speedometerColor);
     } 
 
-    private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit)
+    private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit, int attempt)
     {
         Vector3 currentPosition = transform.position + groundStick;
 
@@ -353,9 +353,9 @@ public class PlayerMovement : MonoBehaviour
         // Try a normal raycast at the same location
         RaycastHit secondHit;
         if(!Physics.Raycast(hit.point + hit.normal * groundCheckDistance,
-                           -hit.normal,
+                           -hit.normal + horMovement.normalized * 0.5f,
                            out secondHit,
-                           groundCheckDistance * 2,
+                           (groundCheckDistance + horMovement.magnitude) * 2,
                            LayerMask.GetMask("Environment")))
         {
             // If it didn't hit anything, something is very wrong
@@ -364,12 +364,13 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // If the hit was at a corner within step height
-        if(secondHit.normal != hit.normal && hit.point.y - currentPosition.y <= stepHeight)
+        float slope = Vector3.Angle(Vector3.up, secondHit.normal);
+        if(secondHit.normal != hit.normal && slope < slopeLimit && hit.point.y - currentPosition.y <= stepHeight)
         {
-            newMovement = movement;                                             // Keep the movement vector the same
-            stepVector = Vector3.up * (hit.point.y - currentPosition.y);        // Move up to accomodate
+            newMovement = movement;                                                                                         // Keep the movement vector the same
+            stepVector = Vector3.Project(Quaternion.FromToRotation(groundNormal, hit.normal) * horMovement, Vector3.up);    // Move up to accomodate
         }
-        else if(secondHit.normal == hit.normal && Vector3.Angle(Vector3.up, hit.normal) < slopeLimit) // If the collision was with ground
+        else if(secondHit.normal == hit.normal && slope < slopeLimit)           // If the collision was with ground
         {
             Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, hit.normal);   // Get the movement vector along the ground plane
 
@@ -422,33 +423,50 @@ public class PlayerMovement : MonoBehaviour
             }
             else    // If we're in midair
             {
-                newMovement = Vector3.Reflect(movement, hit.normal);     // Reflect the movement
+                newMovement = Vector3.ProjectOnPlane(Vector3.Reflect(horMovement, hit.normal), Vector3.up) + verMovement;     // Reflect the movement
             }
         }
-        
-        Vector3 newHorMovement = Vector3.ProjectOnPlane(newMovement, Vector3.up);   // Isolate the horizontal motion
 
-        rb.MovePosition(currentPosition + stepVector + (newMovement + pushVelocity) * Time.fixedDeltaTime);     // Apply motion
-        velocity = newHorMovement.magnitude;                                                                    // Update internal velocity to match
-        verticalVelocity = Vector3.Project(newMovement, Vector3.up).magnitude;                                  // Update internal velocity to match
+        Vector3 totalVelocity = stepVector + (newMovement + pushVelocity);
 
-        if(newHorMovement.magnitude > 0)
+        // Check for collision
+        Vector3 capsuleCenter = currentPosition + coll.center + Vector3.up * groundCheckDistance;       // The center point of the capsule
+        Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                         // The vector from the center to one of the capsule points
+        if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight, capsuleCenter + capsuleHalfHeight, coll.radius,
+                               totalVelocity, out hit, totalVelocity.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment")))   // If we hit something
         {
-            Quaternion rotation = Quaternion.LookRotation(newHorMovement, Vector3.up);              // Calculate the rotation
-            rb.MoveRotation(rotation);                                                              // Update the player's angle
-
-            // Lock the model's rotation for one physics frame
-            IEnumerator revertModelRotation()
+            if(attempt < 10)
             {
-                Quaternion previousRotation = model.rotation;
-                float time = Time.time;
-                while(Time.time < time + Time.fixedDeltaTime)
-                {
-                    yield return new WaitForEndOfFrame();
-                    model.rotation = previousRotation;
-                }
+                Debug.Log(totalVelocity);
+                OnCollision(newMovement, groundStick, hit, attempt + 1);   // Handle the collision
             }
-            StartCoroutine(revertModelRotation()); 
+        }
+        else
+        {
+            Vector3 newHorMovement = Vector3.ProjectOnPlane(newMovement, Vector3.up);   // Isolate the horizontal motion
+
+            rb.MovePosition(currentPosition + totalVelocity * Time.fixedDeltaTime);     // Apply motion
+            velocity = newHorMovement.magnitude;                                                                    // Update internal velocity to match
+            verticalVelocity = Vector3.Project(newMovement, Vector3.up).y;                                          // Update internal velocity to match
+
+            if(newHorMovement.magnitude > 0)
+            {
+                Quaternion rotation = Quaternion.LookRotation(newHorMovement, Vector3.up);              // Calculate the rotation
+                rb.MoveRotation(rotation);                                                              // Update the player's angle
+
+                // Lock the model's rotation for one physics frame
+                IEnumerator revertModelRotation()
+                {
+                    Quaternion previousRotation = model.rotation;
+                    float time = Time.time;
+                    while(Time.time < time + Time.fixedDeltaTime)
+                    {
+                        yield return new WaitForEndOfFrame();
+                        model.rotation = previousRotation;
+                    }
+                }
+                StartCoroutine(revertModelRotation()); 
+            }
         }
     }
 
