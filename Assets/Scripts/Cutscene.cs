@@ -9,24 +9,27 @@ public class Cutscene : MonoBehaviour
     public List<Sprite> frames;
     public List<float> timings;
     public Image target;
-    public bool isRunning;
+    [SerializeField]
+    private bool isRunning;
+    [SerializeField]
     private bool isFinished;
+    [SerializeField]
     private float timer;
+    [SerializeField]
     private int cutsceneIndex;
 
     // Start is called before the first frame update
     void Start()
     {
-        isRunning = false;
-        isFinished = false;
-        timer = 0;
-        cutsceneIndex = 0;
         BeginCutscene();
     }
 
     void BeginCutscene()
     {
+        Time.timeScale = 1f;
         isRunning = true;
+        isFinished = false;
+        timer = 0;
         target.sprite = frames[0];
         target.preserveAspect = true;
     }
