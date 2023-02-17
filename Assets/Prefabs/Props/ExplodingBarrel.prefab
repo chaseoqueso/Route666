@@ -111,7 +111,7 @@ Transform:
   m_GameObject: {fileID: 3677107857287457742}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7081090972742566990}
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27025ae01c6185f43a28d4c1be25e3cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRange: 2
+  explosionRange: 2.94
   damageValue: 1
   explodableLayerMask:
     serializedVersion: 2
