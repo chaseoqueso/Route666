@@ -26,7 +26,7 @@ public class CustomizeHorseMenu : MonoBehaviour
     {
         SaveCustomization();
 
-        Debug.Log("(assign scene to transition to)");
+        // Debug.Log("(assign scene to transition to)");
 
         GameManager.instance.ChangeScene(GameManager.INTRO_SCENE_NAME);
     }
@@ -34,7 +34,7 @@ public class CustomizeHorseMenu : MonoBehaviour
     public void SaveCustomization()
     {
         GameManager.instance.SetHorseName(nameInputField.text);
-        Debug.Log("horse name saved as: " + GameManager.instance.horseName);
+        // Debug.Log("horse name saved as: " + GameManager.instance.horseName);
     }
 
     public void OnHorseNameInputChanged()
