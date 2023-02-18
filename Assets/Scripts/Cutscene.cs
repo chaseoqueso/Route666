@@ -3,11 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class CutsceneFrame{
+    [Tooltip("The frame image sprite")]
+    [SerializeField] private Sprite frameSprite;
+
+    [Tooltip("The time (in seconds) this frame is shown")]
+    [SerializeField] private float timing;
+
+    public Sprite FrameSprite(){return frameSprite;}
+    public float Timing(){return timing;}
+}
+
 public class Cutscene : MonoBehaviour
 {
     // Frames
-    public List<Sprite> frames;
-    public List<float> timings;
+    [SerializeField] private List<CutsceneFrame> cutsceneFrames = new List<CutsceneFrame>();
+    // public List<Sprite> frames;
+    // public List<float> timings;
     public Image target;
     [SerializeField]
     private bool isRunning;
@@ -30,11 +43,11 @@ public class Cutscene : MonoBehaviour
         isRunning = true;
         isFinished = false;
         timer = 0;
-        target.sprite = frames[0];
+        target.sprite = cutsceneFrames[0].FrameSprite();
         target.preserveAspect = true;
     }
 
-    void EndCutscene()
+    public void EndCutscene()
     {
         isRunning = false;
         isFinished = true;
@@ -48,17 +61,17 @@ public class Cutscene : MonoBehaviour
         if (isRunning && !isFinished)
         {
             // are we at the end of the cutscene?
-            if (cutsceneIndex + 1 > frames.Count - 1)
+            if (cutsceneIndex + 1 > cutsceneFrames.Count - 1)
             {
                 EndCutscene();
             }
 
             // are we done with this frame? 
-            else if (timer >= timings[cutsceneIndex])
+            else if (timer >= cutsceneFrames[cutsceneIndex].Timing())
             {
                 // advance frame and reset timer
                 cutsceneIndex++;
-                target.sprite = frames[cutsceneIndex];
+                target.sprite = cutsceneFrames[cutsceneIndex].FrameSprite();
                 timer = 0;
             }
             // nah, keep displaying same frame and increment timer
