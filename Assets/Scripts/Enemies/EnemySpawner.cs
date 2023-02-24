@@ -107,10 +107,19 @@ public class EnemySpawner : MonoBehaviour
 
             GameObject newEnemy = Instantiate( enemyToSpawn.EnemyPrefab(), gameObject.transform.position, Quaternion.identity );
 
-            newEnemy.GetComponent<Enemy>().spawnPoint = this;
-            newEnemy.GetComponent<Enemy>().playerLoc = playerLoc;
+            Enemy enemy = newEnemy.GetComponent<Enemy>();
 
-            RandomlyGeneratePunkEnemyAppearance(newEnemy);
+            enemy.spawnPoint = this;
+            enemy.playerLoc = playerLoc;
+
+            switch(enemy.EnemyID()){
+                case EnemyID.punkMale:
+                    RandomlyGenerateMalePunkEnemyAppearance(newEnemy);
+                    break;
+                case EnemyID.punkFemale:
+                    // TODO
+                    break;
+            }
 
             UpdatePopOnNewSpawn();
         }
@@ -128,8 +137,8 @@ public class EnemySpawner : MonoBehaviour
         totalActiveEnemies++;
     }
 
-    #region Random Punk Enemy Appearance Generation
-        private void RandomlyGeneratePunkEnemyAppearance(GameObject newEnemy)
+    #region Random Enemy Appearance Generation
+        private void RandomlyGenerateMalePunkEnemyAppearance(GameObject newEnemy)
         {
             SkinnedMeshRenderer[] meshRenderers = newEnemy.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 

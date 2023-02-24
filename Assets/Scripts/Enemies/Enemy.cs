@@ -24,9 +24,18 @@ public enum EnemyState{
     enumSize
 }
 
+public enum EnemyID{
+    punkMale,
+    punkFemale,
+
+    GreezeyHogg
+}
+
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour, IShootable
 {
+    [SerializeField] private EnemyID enemyID;
+
     public static List<GameObject> ragdollList;
 
     protected EnemyState enemyState = EnemyState.Idle;
@@ -84,6 +93,11 @@ public class Enemy : MonoBehaviour, IShootable
     public void OnShoot()
     {
         TakeDamage(GameManager.instance.player.gunDamage, KillType.normalGunKill);
+    }
+
+    public EnemyID EnemyID()
+    {
+        return enemyID;
     }
 
     #region Health Stuff
