@@ -111,11 +111,13 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;                       // The rigidbody that handles player movement
     private CapsuleCollider coll;               // The player collider
     private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
+    private Quaternion modelLockRotation;        // The rotation to lock the model to (if applicable)
     private float velocity;                     // The current forward velocity
     private float verticalVelocity;             // The current vertical velocity
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
     private bool isGrounded;                    // Whether the player is on the ground or not
+    private bool lockModel;                     // Whether the model should be locked in place
 
     // Camera
     private Quaternion headStartAngle;  // The head bone's starting angle
@@ -168,46 +170,55 @@ public class PlayerMovement : MonoBehaviour
         // --- MODEL ROTATION ---
         // ----------------------
 
-        // Lean the model around the Z-axis
-        float leanAngle;
-        if(isGrounded)  // If the player is on the ground
+        if(lockModel)
         {
-            leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
+            model.rotation = modelLockRotation;
+            lockModel = false;
         }
-        else            // If the player is in the air
+        else
         {
-            leanAngle = 0;  // Don't lean
+            // Lean the model around the Z-axis
+            float leanAngle;
+            if(isGrounded)  // If the player is on the ground
+            {
+                leanAngle = Mathf.Clamp(turnAngle/maxTurnAngle, -1, 1) * -maxLeanAngle;       // Calculate the angle to lean the player model
+            }
+            else            // If the player is in the air
+            {
+                leanAngle = 0;  // Don't lean
+            }
+            Quaternion leanRotation = Quaternion.AngleAxis(leanAngle, Vector3.forward);         // Set the lean rotation
+
+            // Skew the model if drifting
+            float idealSkewAngle;
+            if(driftState != DriftState.None)   // If drifting
+            {
+                float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
+                Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);      // The angle range to skew the model
+                float skewAmount = Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle);                            // Get the skew amount from 0 to 1
+                idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, skewAmount);                                // Get the desired skew angle based on the skew angle range
+            
+                // Rotate the handlebars opposite to the drift direction
+                steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, -(int)driftState * steeringTurnAngle * 2f, 0), steeringTurnSpeed * Time.deltaTime);
+            }
+            else    // If not drifting
+            {
+                idealSkewAngle = 0;
+
+                // Rotate the handlebars according to the turn direction
+                steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, turnInput * steeringTurnAngle, 0), steeringTurnSpeed * Time.deltaTime);
+            }
+            float previousSkewAngle = driftSkewAngle;   // Record the previous angle
+            driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.deltaTime);         // Move the drift angle toward the ideal
+            Quaternion skewRotation = Quaternion.AngleAxis(driftSkewAngle, Vector3.up);                                 // Set the skew rotation
+
+            // Adjust the camera
+            lookAngle.x -= (driftSkewAngle - previousSkewAngle) / 2; // Subtract a portion of the skew angle from the look angle to maintain look direction
+
+            // Set the model rotation
+            Quaternion idealRotation = skewRotation * leanRotation;
+            model.localRotation = Quaternion.RotateTowards(model.localRotation, idealRotation, (Quaternion.Angle(model.localRotation, idealRotation) + 10) * modelTrackingSpeed * Time.deltaTime);
         }
-        Quaternion leanRotation = Quaternion.AngleAxis(leanAngle, Vector3.forward);         // Set the lean rotation
-
-        // Skew the model if drifting
-        float idealSkewAngle;
-        if(driftState != DriftState.None)   // If drifting
-        {
-            float skewAngle = driftModelSkewAngle * (int)driftState;        // The middle of the skew angle range
-            Vector2 skewRange = new Vector2(skewAngle - driftModelSkewRange, skewAngle + driftModelSkewRange);      // The angle range to skew the model
-            float skewAmount = Mathf.InverseLerp(angleRange.x, angleRange.y, turnAngle);                            // Get the skew amount from 0 to 1
-            idealSkewAngle = Mathf.SmoothStep(skewRange.x, skewRange.y, skewAmount);                                // Get the desired skew angle based on the skew angle range
-        
-            // Rotate the handlebars opposite to the drift direction
-            steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, -(int)driftState * steeringTurnAngle * 2f, 0), steeringTurnSpeed * Time.deltaTime);
-        }
-        else    // If not drifting
-        {
-            idealSkewAngle = 0;
-
-            // Rotate the handlebars according to the turn direction
-            steering.localRotation = Quaternion.RotateTowards(steering.localRotation, Quaternion.Euler(0, turnInput * steeringTurnAngle, 0), steeringTurnSpeed * Time.deltaTime);
-        }
-        float previousSkewAngle = driftSkewAngle;   // Record the previous angle
-        driftSkewAngle = Mathf.MoveTowards(driftSkewAngle, idealSkewAngle, maxSkewChange * Time.deltaTime);         // Move the drift angle toward the ideal
-        Quaternion skewRotation = Quaternion.AngleAxis(driftSkewAngle, Vector3.up);                                 // Set the skew rotation
-
-        // Adjust the camera
-        lookAngle.x -= (driftSkewAngle - previousSkewAngle) / 2; // Subtract a portion of the skew angle from the look angle to maintain look direction
-
-        // Set the model rotation
-        model.localRotation = Quaternion.RotateTowards(model.localRotation, skewRotation * leanRotation, modelTrackingSpeed * Time.deltaTime);
     }
 
     // We do our physics in FixedUpdate because Unity likes that
@@ -438,7 +449,8 @@ public class PlayerMovement : MonoBehaviour
                 if(Vector3.Angle(horMovement, -averageHitNormal) > 90 - wallLimit)
                 {
                     Debug.Log("Glance Collision");
-                    newMovement = wallVector;   // Set movement to the movement vector along the wall
+                    newMovement = wallVector + averageHitNormal;   // Set movement to the movement vector along the wall
+                    turnAngle = 0;
                 }
                 else    // If the horizontal angle of the collision is too sharp
                 {
@@ -504,21 +516,18 @@ public class PlayerMovement : MonoBehaviour
                 Quaternion rotation = Quaternion.LookRotation(newHorMovement, Vector3.up);              // Calculate the rotation
                 rb.MoveRotation(rotation);                                                              // Update the player's angle
 
-                Debug.Log("New HorVelocity");
-                Debug.Log(newHorMovement);
-
                 // Lock the model's rotation for one physics frame
-                IEnumerator revertModelRotation()
+                IEnumerator lockModelRotation()
                 {
-                    Quaternion previousRotation = model.rotation;
+                    modelLockRotation = model.rotation;
                     float time = Time.time;
                     while(Time.time < time + Time.fixedDeltaTime)
                     {
+                        lockModel = true;
                         yield return new WaitForEndOfFrame();
-                        model.rotation = previousRotation;
                     }
                 }
-                StartCoroutine(revertModelRotation()); 
+                StartCoroutine(lockModelRotation()); 
             }
         }
     }
