@@ -83,12 +83,15 @@ public class Enemy : MonoBehaviour, IShootable
         enemyAgent.SetDestination(playerLoc.position);
     }
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if(damageOnImpact && collision.gameObject.tag == "Player"){
-            TakeDamage(GameManager.instance.player.motorcycleImpactDamage, KillType.collisionKill);
-        }
-    }
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     if(damageOnImpact && collision.gameObject.tag == "Player"){
+    //         PlayerMovement player;
+    //         if(collision.gameObject.TryGetComponent<PlayerMovement>(out player) && player.EnemyImpactIsValid(this)){
+    //             TakeDamage(GameManager.instance.player.motorcycleImpactDamage, KillType.collisionKill);
+    //         }
+    //     }
+    // }
 
     public void OnShoot()
     {
@@ -133,6 +136,7 @@ public class Enemy : MonoBehaviour, IShootable
                         ragdollList.RemoveAt(10);
                     }
 
+                    GetComponent<Collider>().enabled = false;
                     Destroy(gameObject);
                 }
             }
