@@ -14541,6 +14541,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3147893761818561444, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
+      propertyPath: runOverSpeedDecrease
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 9203775667136961480, guid: c680801e053d2f84bac2c72e67045f83, type: 3}
       propertyPath: m_Name
       value: Player

@@ -252,8 +252,8 @@ MonoBehaviour:
   modelTrackingSpeed: 5
   acceleration: 14
   brakeStrength: 8
-  maxVelocity: 16
-  highVelocity: 14
+  maxVelocity: 40
+  highVelocity: 30
   runOverSpeedDecrease: 0.125
   maxTurnAngle: 90
   maxTurnChange: 270

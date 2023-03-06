@@ -60,9 +60,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float acceleration;
     [Tooltip("The rate of deceleration in units/s^2 when braking.")]
     [SerializeField] private float brakeStrength;
-    [Tooltip("The maximum achievable velocity.")]
+    [Tooltip("The maximum achievable velocity (mph).")]
     [SerializeField] private float maxVelocity;
-    [Tooltip("The velocity threshold beyond which is considered high velocity for gameplay purposes.")]
+    [Tooltip("The velocity threshold beyond which is considered high velocity for gameplay purposes (mph).")]
     [SerializeField] private float highVelocity;
     [Tooltip("The percent of total velocity to lose when we run over an enemy.")]
     [SerializeField] private float runOverSpeedDecrease;
@@ -104,21 +104,29 @@ public class PlayerMovement : MonoBehaviour
     private float turnInput;    // The current input value for turning
     private float driftInput;   // The current input value for accelerating or braking
 
-    // Motion
+    // Ground Check & Gravity
     private RaycastHit groundHit;               // The collision data of the ground
     private RaycastHit previousGroundHit;       // The collision data of the ground last frame
-    private bool groundHitIsValid;              // Whether the groundHit is valid
-    private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
-    private Vector2 angleRange;                 // The range of angles the player can turn within
-    private Rigidbody rb;                       // The rigidbody that handles player movement
-    private CapsuleCollider coll;               // The player collider
-    private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
-    private Quaternion modelLockRotation;        // The rotation to lock the model to (if applicable)
-    private float velocity;                     // The current forward velocity
     private float verticalVelocity;             // The current vertical velocity
+    private bool groundHitIsValid;              // Whether the groundHit is valid
+    private bool isGrounded;                    // Whether the player is on the ground or not
+
+    // Turning & Drifting
+    private Vector2 angleRange;                 // The range of angles the player can turn within
+    private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
-    private bool isGrounded;                    // Whether the player is on the ground or not
+
+    // Physics
+    private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
+    private Rigidbody rb;                       // The rigidbody that handles player movement
+    private CapsuleCollider coll;               // The player collider
+    private float internalMaxVelocity;          // The max velocity to use internally (mps instead of mph)
+    private float internalHighVelocity;         // The high velocity threshold to use internally (mps instead of mph)
+    private float velocity;                     // The current forward velocity
+
+    // Player Model
+    private Quaternion modelLockRotation;       // The rotation to lock the model to (if applicable)
     private bool lockModel;                     // Whether the model should be locked in place
 
     // Camera
@@ -142,12 +150,13 @@ public class PlayerMovement : MonoBehaviour
         }
         anim.SetFloat("FireRate", fireRate);
 
+        // Convert mph values to mps
+        internalMaxVelocity = maxVelocity * 0.44704f;
+        internalHighVelocity = highVelocity * 0.44704f;
+
         headStartAngle = head.rotation;     // Get the initial head rotation
-
         groundHitIsValid = false;           // We haven't checked the ground yet
-
         canShoot = true;                    // Enable shooting
-
         muzzleFlare.SetActive(false);       // Disable muzzle flare
     }
 
@@ -244,7 +253,7 @@ public class PlayerMovement : MonoBehaviour
         if(isGrounded)
         {
             velocity += driveInput * accel * Time.fixedDeltaTime;                // Accelerate or decelerate based on player input
-            velocity -= (velocity / maxVelocity) * accel * Time.fixedDeltaTime;  // Decelerate according to drag
+            velocity -= (velocity / internalMaxVelocity) * accel * Time.fixedDeltaTime;  // Decelerate according to drag
         }
 
         if(velocity < acceleration * 0.5f * Time.fixedDeltaTime)             // If velocity would be negative or very small, set velocity to 0
@@ -253,6 +262,12 @@ public class PlayerMovement : MonoBehaviour
         // ---------------
         // --- TURNING ---
         // ---------------
+
+        // If we're going too slow to drift, stop drifting
+        if(CalculateTotalVelocity() < internalHighVelocity && driftState != DriftState.None)
+        {
+            driftState = DriftState.None;
+        }
 
         // Calculate the min and max angle the player can turn
         if(driftState == DriftState.None)   // If we aren't currently drifting
@@ -366,8 +381,9 @@ public class PlayerMovement : MonoBehaviour
             PerformMovement(groundStickVector, moveVector);
         }
 
-        Color speedometerColor = velocity >= highVelocity ? new Color(1, 0.5f, 0, 1) : Color.white;
-        GameManager.instance.UIManager.SetSpeedometer(velocity * 2.23694f, speedometerColor);
+        float totalVelocity = CalculateTotalVelocity();
+        Color speedometerColor = totalVelocity >= internalHighVelocity ? new Color(1, 0.5f, 0, 1) : Color.white;
+        GameManager.instance.UIManager.SetSpeedometer(totalVelocity * 2.23694f, speedometerColor);
     }
 
     private void PerformMovement(Vector3 groundStickVector, Vector3 moveVector)
@@ -485,7 +501,7 @@ public class PlayerMovement : MonoBehaviour
                     else    // If the horizontal angle of the collision is too sharp
                     {
                         Debug.Log("Bounce Collision");
-                        if(velocity > highVelocity)     // If the player's going fast
+                        if(velocity > internalHighVelocity)     // If the player's going fast
                         {
                             pushVelocity = Vector3.ProjectOnPlane(averageHitNormal, Vector3.up) * horMovement.magnitude;      // Add a bounce velocity away from the wall
                             newMovement = horMovement/2;                                                                // Reduce horizontal velocity
@@ -568,7 +584,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // If the enemy is in front of the player and the player is at a high velocity, we can run the enemy over
         Vector3 fromToVector = enemy.transform.position - transform.position;
-        if(Vector3.Dot(fromToVector, transform.forward) > 0 && velocity >= highVelocity)
+        if(Vector3.Dot(fromToVector, transform.forward) > 0 && CalculateTotalVelocity() >= internalHighVelocity)
         {
             if(reducePlayerSpeed)
             {
@@ -625,7 +641,7 @@ public class PlayerMovement : MonoBehaviour
         driftInput = context.ReadValue<float>();        // Read the input value
         if(driftState == DriftState.None)               // If not currently drifting
         {
-            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)          // If drift is pressed and a turn input is pressed
+            if(driftInput > 0 && Mathf.Abs(turnInput) > 0 && CalculateTotalVelocity() >= internalHighVelocity)  // If drift is pressed and a turn input is pressed, and we're at high velocity
             {
                 driftState = (DriftState)Mathf.Sign(turnInput);     // Drift in the turn direction
             }
@@ -695,5 +711,10 @@ public class PlayerMovement : MonoBehaviour
             IEnumerator ResetShooting() { yield return new WaitForSeconds(1/fireRate); canShoot = true; }
             StartCoroutine(ResetShooting());
         }
+    }
+
+    private float CalculateTotalVelocity()
+    {
+        return (velocity * transform.forward + verticalVelocity * transform.up).magnitude;
     }
 }
