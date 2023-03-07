@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -580,6 +581,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private float CalculateTotalVelocity()
+    {
+        return (velocity * transform.forward + verticalVelocity * transform.up).magnitude;
+    }
+
     public bool TryEnemyImpact(Enemy enemy, bool reducePlayerSpeed = true)
     {
         // If the enemy is in front of the player and the player is at a high velocity, we can run the enemy over
@@ -680,7 +686,12 @@ public class PlayerMovement : MonoBehaviour
         // If the fire button was pressed
         if(!GameIsPaused() && canShoot && context.performed && context.ReadValue<float>() > 0)
         {
+
+            // Set default values
+            float distance = 100;
+            Vector3 hitNormal = Vector3.zero;
             Vector3 bulletDirection = Camera.main.transform.forward;
+            UnityAction performWhenBulletReachesDest = null;
 
             // Send a raycast out from the camera in the direction the player is looking
             RaycastHit hit;
@@ -692,14 +703,18 @@ public class PlayerMovement : MonoBehaviour
                 IShootable shootScript = hit.transform.GetComponent<IShootable>();  // Try to get an IShootable component
                 if(shootScript != null)                                             // If one was found
                 {
-                    shootScript.OnShoot();                                          // Call the shoot function
+                    performWhenBulletReachesDest = shootScript.OnShoot;     // Tell the bullet to call the shoot function
                 }
+
+                // Fill in the necessary bullet values
+                distance = hit.distance;
+                hitNormal = hit.normal;
                 bulletDirection = hit.point - bulletSpawnPoint.position;
             }
 
             anim.SetTrigger("Shoot");   // Trigger the shoot animation
             Bullet bulletScript = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity).GetComponent<Bullet>();
-            bulletScript.Initialize(bulletDirection.normalized * 200, 100);
+            bulletScript.Initialize(bulletDirection.normalized * 200, distance, hitNormal, performWhenBulletReachesDest);
 
             // Activate muzzle flare
             muzzleFlare.SetActive(true);
@@ -711,10 +726,5 @@ public class PlayerMovement : MonoBehaviour
             IEnumerator ResetShooting() { yield return new WaitForSeconds(1/fireRate); canShoot = true; }
             StartCoroutine(ResetShooting());
         }
-    }
-
-    private float CalculateTotalVelocity()
-    {
-        return (velocity * transform.forward + verticalVelocity * transform.up).magnitude;
     }
 }
