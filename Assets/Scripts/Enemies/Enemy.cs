@@ -24,9 +24,18 @@ public enum EnemyState{
     enumSize
 }
 
+public enum EnemyID{
+    punkMale,
+    punkFemale,
+
+    GreezeyHogg
+}
+
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour, IShootable
 {
+    [SerializeField] private EnemyID enemyID;
+
     public static List<GameObject> ragdollList;
 
     protected EnemyState enemyState = EnemyState.Idle;
@@ -74,16 +83,24 @@ public class Enemy : MonoBehaviour, IShootable
         enemyAgent.SetDestination(playerLoc.position);
     }
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if(damageOnImpact && collision.gameObject.tag == "Player"){
-            TakeDamage(GameManager.instance.player.motorcycleImpactDamage, KillType.collisionKill);
-        }
-    }
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     if(damageOnImpact && collision.gameObject.tag == "Player"){
+    //         PlayerMovement player;
+    //         if(collision.gameObject.TryGetComponent<PlayerMovement>(out player) && player.EnemyImpactIsValid(this)){
+    //             TakeDamage(GameManager.instance.player.motorcycleImpactDamage, KillType.collisionKill);
+    //         }
+    //     }
+    // }
 
     public void OnShoot()
     {
         TakeDamage(GameManager.instance.player.gunDamage, KillType.normalGunKill);
+    }
+
+    public EnemyID EnemyID()
+    {
+        return enemyID;
     }
 
     #region Health Stuff
@@ -119,6 +136,7 @@ public class Enemy : MonoBehaviour, IShootable
                         ragdollList.RemoveAt(10);
                     }
 
+                    GetComponent<Collider>().enabled = false;
                     Destroy(gameObject);
                 }
             }

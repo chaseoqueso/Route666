@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class SpawnTableEntry{
+public class SpawnTableEntry : System.IComparable<SpawnTableEntry>
+{
     [Tooltip("A specific enemy prefab to generate from this spawner")]
     [SerializeField] private GameObject enemyPrefab;
 
-    [Tooltip("% chance of this enemy spawning (all %s in the list must add up to 100%) - as whole numbers (50% = 50)")]
+    [Tooltip("% chance of this enemy spawning, as whole numbers (50% = 50). all Spawn Chances must add up to exactly 100")]
     [SerializeField] private float spawnChance;
 
     public GameObject EnemyPrefab(){return enemyPrefab;}
     public float SpawnChance(){return spawnChance;}
+
+    public int CompareTo(SpawnTableEntry otherEntry)
+    {
+        return this.spawnChance.CompareTo(otherEntry.SpawnChance());
+    }
 }
 
 public class EnemySpawner : MonoBehaviour
@@ -78,16 +84,42 @@ public class EnemySpawner : MonoBehaviour
     public void SpawnEnemies()
     {
         while(totalActiveEnemies < targetActiveEnemies){
-            // (look at Continuum gear generation)
-            // TODO: generate a random number and find the % it matches and spawn that type of enemy
+            // Generate a random number and find the % it matches to spawn that type of enemy
+            float chanceRolled = Random.Range(0.0f, 100.0f);
 
-            // TEMP
-            GameObject newEnemy = Instantiate( spawnTable[0].EnemyPrefab(), gameObject.transform.position, Quaternion.identity );
+            SpawnTableEntry enemyToSpawn = spawnTable[0];
+            foreach( SpawnTableEntry entry in spawnTable ){
+                // if the next item in the list has a chance that is LESS THAN the chance that you rolled,
+                // then subtract that item's chance from chance rolled
+                float entryChance = entry.SpawnChance();
+                if( entryChance <= chanceRolled ){
+                    chanceRolled -= entryChance;
+                }
+                // ... until you find a chance greater than the chance that you rolled
+                else{
+                    enemyToSpawn = entry;
+                }
+            }
 
-            newEnemy.GetComponent<Enemy>().spawnPoint = this;
-            newEnemy.GetComponent<Enemy>().playerLoc = playerLoc;
+            if( enemyToSpawn == null ){
+                Debug.LogError("No enemy prefabs found in spawn table");
+            }
 
-            RandomlyGeneratePunkEnemyAppearance(newEnemy);
+            GameObject newEnemy = Instantiate( enemyToSpawn.EnemyPrefab(), gameObject.transform.position, Quaternion.identity );
+
+            Enemy enemy = newEnemy.GetComponent<Enemy>();
+
+            enemy.spawnPoint = this;
+            enemy.playerLoc = playerLoc;
+
+            switch(enemy.EnemyID()){
+                case EnemyID.punkMale:
+                    RandomlyGenerateMalePunkEnemyAppearance(newEnemy);
+                    break;
+                case EnemyID.punkFemale:
+                    // TODO
+                    break;
+            }
 
             UpdatePopOnNewSpawn();
         }
@@ -105,8 +137,8 @@ public class EnemySpawner : MonoBehaviour
         totalActiveEnemies++;
     }
 
-    #region Random Punk Enemy Appearance Generation
-        private void RandomlyGeneratePunkEnemyAppearance(GameObject newEnemy)
+    #region Random Enemy Appearance Generation
+        private void RandomlyGenerateMalePunkEnemyAppearance(GameObject newEnemy)
         {
             SkinnedMeshRenderer[] meshRenderers = newEnemy.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 

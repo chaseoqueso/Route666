@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -60,10 +61,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float acceleration;
     [Tooltip("The rate of deceleration in units/s^2 when braking.")]
     [SerializeField] private float brakeStrength;
-    [Tooltip("The maximum achievable velocity.")]
+    [Tooltip("The maximum achievable velocity (mph).")]
     [SerializeField] private float maxVelocity;
-    [Tooltip("The velocity threshold beyond which is considered high velocity for gameplay purposes.")]
+    [Tooltip("The velocity threshold beyond which is considered high velocity for gameplay purposes (mph).")]
     [SerializeField] private float highVelocity;
+    [Tooltip("The percent of total velocity to lose when we run over an enemy.")]
+    [SerializeField] private float runOverSpeedDecrease;
 
     [Header("Turning")]
     [Tooltip("The maximum change of direction in degrees/s.")]
@@ -102,21 +105,29 @@ public class PlayerMovement : MonoBehaviour
     private float turnInput;    // The current input value for turning
     private float driftInput;   // The current input value for accelerating or braking
 
-    // Motion
+    // Ground Check & Gravity
     private RaycastHit groundHit;               // The collision data of the ground
     private RaycastHit previousGroundHit;       // The collision data of the ground last frame
-    private bool groundHitIsValid;              // Whether the groundHit is valid
-    private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
-    private Vector2 angleRange;                 // The range of angles the player can turn within
-    private Rigidbody rb;                       // The rigidbody that handles player movement
-    private CapsuleCollider coll;               // The player collider
-    private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
-    private Quaternion modelLockRotation;        // The rotation to lock the model to (if applicable)
-    private float velocity;                     // The current forward velocity
     private float verticalVelocity;             // The current vertical velocity
+    private bool groundHitIsValid;              // Whether the groundHit is valid
+    private bool isGrounded;                    // Whether the player is on the ground or not
+
+    // Turning & Drifting
+    private Vector2 angleRange;                 // The range of angles the player can turn within
+    private DriftState driftState;              // Whether the player is in a drift or not, and if so which direction
     private float turnAngle;                    // The current change in direction
     private float driftSkewAngle;               // The current drifting skew angle for the model
-    private bool isGrounded;                    // Whether the player is on the ground or not
+
+    // Physics
+    private Vector3 pushVelocity;               // An external velocity vector that maintains player momentum while still pushing the player
+    private Rigidbody rb;                       // The rigidbody that handles player movement
+    private CapsuleCollider coll;               // The player collider
+    private float internalMaxVelocity;          // The max velocity to use internally (mps instead of mph)
+    private float internalHighVelocity;         // The high velocity threshold to use internally (mps instead of mph)
+    private float velocity;                     // The current forward velocity
+
+    // Player Model
+    private Quaternion modelLockRotation;       // The rotation to lock the model to (if applicable)
     private bool lockModel;                     // Whether the model should be locked in place
 
     // Camera
@@ -140,12 +151,13 @@ public class PlayerMovement : MonoBehaviour
         }
         anim.SetFloat("FireRate", fireRate);
 
+        // Convert mph values to mps
+        internalMaxVelocity = maxVelocity * 0.44704f;
+        internalHighVelocity = highVelocity * 0.44704f;
+
         headStartAngle = head.rotation;     // Get the initial head rotation
-
         groundHitIsValid = false;           // We haven't checked the ground yet
-
         canShoot = true;                    // Enable shooting
-
         muzzleFlare.SetActive(false);       // Disable muzzle flare
     }
 
@@ -242,7 +254,7 @@ public class PlayerMovement : MonoBehaviour
         if(isGrounded)
         {
             velocity += driveInput * accel * Time.fixedDeltaTime;                // Accelerate or decelerate based on player input
-            velocity -= (velocity / maxVelocity) * accel * Time.fixedDeltaTime;  // Decelerate according to drag
+            velocity -= (velocity / internalMaxVelocity) * accel * Time.fixedDeltaTime;  // Decelerate according to drag
         }
 
         if(velocity < acceleration * 0.5f * Time.fixedDeltaTime)             // If velocity would be negative or very small, set velocity to 0
@@ -251,6 +263,12 @@ public class PlayerMovement : MonoBehaviour
         // ---------------
         // --- TURNING ---
         // ---------------
+
+        // If we're going too slow to drift, stop drifting
+        if(CalculateTotalVelocity() < internalHighVelocity && driftState != DriftState.None)
+        {
+            driftState = DriftState.None;
+        }
 
         // Calculate the min and max angle the player can turn
         if(driftState == DriftState.None)   // If we aren't currently drifting
@@ -344,37 +362,52 @@ public class PlayerMovement : MonoBehaviour
         Vector3 capsuleCenter = transform.position + groundStickVector + coll.center + Vector3.up * groundCheckDistance;    // The center point of the capsule
         Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                                             // The vector from the center to one of the capsule points
         if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight, capsuleCenter + capsuleHalfHeight, coll.radius,
-                               moveVector, out sphereHit, moveVector.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment")))   // If we hit something
+                               moveVector, out sphereHit, moveVector.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment", "Enemy")))   // If we hit something
         {
-            List<Vector3> hitNormals = new List<Vector3>();
-            hitNormals.Add(sphereHit.normal);
-            OnCollision(moveVector, groundStickVector, sphereHit, hitNormals);   // Handle the collision
+            // If the object hit has an enemy script and the enemy impact is valid, perform movement as normal. Otherwise, calculate the collision.
+            Enemy enemyScript;
+            if(sphereHit.collider.TryGetComponent<Enemy>(out enemyScript) && TryEnemyImpact(enemyScript))
+            {
+                PerformMovement(groundStickVector, moveVector);
+            }
+            else
+            {
+                List<RaycastHit> hitNormals = new List<RaycastHit>();
+                hitNormals.Add(sphereHit);
+                OnCollision(moveVector, groundStickVector, sphereHit, hitNormals);   // Handle the collision
+            }
         }
         else
-        {          
-            if(isGrounded)
-            {
-                rb.MoveRotation(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * transform.rotation);  // Rotate the player around the Y-axis
-            }
-
-            rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime + groundStickVector);    // Apply movement
-
-            // If pushVelocity is nearly zero
-            if(pushVelocity.magnitude < Time.fixedDeltaTime)
-            {
-                pushVelocity = Vector3.zero;    // Remove it
-            }
-            else    // Otherwise
-            {
-                pushVelocity = pushVelocity.normalized * (pushVelocity.magnitude - acceleration * Time.fixedDeltaTime);    // Reduce pushVelocity strength
-            }
+        {
+            PerformMovement(groundStickVector, moveVector);
         }
 
-        Color speedometerColor = velocity >= highVelocity ? new Color(1, 0.5f, 0, 1) : Color.white;
-        GameManager.instance.UIManager.SetSpeedometer(velocity * 2.23694f, speedometerColor);
-    } 
+        float totalVelocity = CalculateTotalVelocity();
+        Color speedometerColor = totalVelocity >= internalHighVelocity ? new Color(1, 0.5f, 0, 1) : Color.white;
+        GameManager.instance.UIManager.SetSpeedometer(totalVelocity * 2.23694f, speedometerColor);
+    }
 
-    private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit, List<Vector3> hitNormals)
+    private void PerformMovement(Vector3 groundStickVector, Vector3 moveVector)
+    {
+        if (isGrounded)
+        {
+            rb.MoveRotation(Quaternion.Euler(0, turnAngle * Time.fixedDeltaTime, 0) * transform.rotation);  // Rotate the player around the Y-axis
+        }
+
+        rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime + groundStickVector);    // Apply movement
+
+        // If pushVelocity is nearly zero
+        if (pushVelocity.magnitude < acceleration * Time.fixedDeltaTime)
+        {
+            pushVelocity = Vector3.zero;    // Remove it
+        }
+        else    // Otherwise
+        {
+            pushVelocity = pushVelocity.normalized * (pushVelocity.magnitude - acceleration * Time.fixedDeltaTime);    // Reduce pushVelocity strength
+        }
+    }
+
+    private void OnCollision(Vector3 movement, Vector3 groundStick, RaycastHit hit, List<RaycastHit> hitNormals)
     {
         Vector3 currentPosition = transform.position + groundStick;
 
@@ -386,106 +419,121 @@ public class PlayerMovement : MonoBehaviour
         Vector3 newMovement;
 
         // Create a normal vector that represents the sum of all collision vectors that have occurred this frame
-        Vector3 sumHits(List<Vector3> hits)
+        Vector3 sumHits(List<RaycastHit> hits)
         {
             Vector3 output = Vector3.zero;
-            foreach(Vector3 v in hits)
-                output += v;
+            foreach(RaycastHit h in hits)
+            {
+                // Only sum the collision vectors of environment collisions
+                if(h.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
+                    output += h.normal;
+            }
             return output.normalized;
         }
         Vector3 averageHitNormal = sumHits(hitNormals);
 
-        Vector3 secondNormal = hit.normal;
-        // Try a normal raycast at the same location
-        RaycastHit secondHit;
-        if(Physics.Raycast(hit.point + hit.normal * groundCheckDistance + horMovement.normalized * 0.01f,
-                           -hit.normal,
-                           out secondHit,
-                           (groundCheckDistance + horMovement.magnitude) * 2,
-                           LayerMask.GetMask("Environment")))
+        // If the collision was with an enemy
+        if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            secondNormal = secondHit.normal;
+            // Debug.Log("Enemy Collision");
+
+            // Reduce speed
+            newMovement = playerMovement * (1 - runOverSpeedDecrease * (driftState != DriftState.None ? 0.5f : 1));
         }
-
-        // If the hit was at a corner within step height
-        float slope = Vector3.Angle(Vector3.up, averageHitNormal);
-        float secondSlope = Vector3.Angle(Vector3.up, secondNormal);
-        float hitDifference = hit.point.y - currentPosition.y;
-        if(secondHit.normal != hit.normal && secondSlope < slopeLimit && hitDifference > 0 && hitDifference <= stepHeight)
+        else    // If the collision was with the environment
         {
-            Debug.Log("Step");
-            Debug.Log(averageHitNormal);
-            Debug.Log(secondNormal);
-            newMovement = movement;     // Keep the movement vector the same
-
-            stepVector = Vector3.up * Mathf.Min(hitDifference, (Quaternion.FromToRotation(Vector3.up, averageHitNormal) * horMovement).y);    // Move up to accomodate
-        }
-        else if(slope < slopeLimit)           // If the collision was with ground
-        {
-            Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, averageHitNormal);   // Get the movement vector along the ground plane
-
-            // If we were already on the ground
-            if(isGrounded)
+            Vector3 secondNormal = hit.normal;
+            // Try a normal raycast at the same location
+            RaycastHit secondHit;
+            if(Physics.Raycast(hit.point + hit.normal * groundCheckDistance + horMovement.normalized * 0.01f,
+                            -hit.normal,
+                            out secondHit,
+                            (groundCheckDistance + horMovement.magnitude) * 2,
+                            LayerMask.GetMask("Environment")))
             {
-                Debug.Log("Ground Angle Adjust");
-                newMovement = Quaternion.FromToRotation(movement, projectedMovement) * movement;    // Rotate our movement vector to align with the new ground normal
+                secondNormal = secondHit.normal;
             }
-            else // If we weren't on the ground
+
+            // If the hit was at a corner within step height
+            float slope = Vector3.Angle(Vector3.up, averageHitNormal);
+            float secondSlope = Vector3.Angle(Vector3.up, secondNormal);
+            float hitDifference = hit.point.y - currentPosition.y;
+            if(secondHit.normal != hit.normal && secondSlope < slopeLimit && hitDifference > 0 && hitDifference <= stepHeight)
             {
-                Debug.Log("Landing Collision");
-                newMovement = Vector3.ProjectOnPlane(horMovement, averageHitNormal);    // Remove any excess vertical velocity
+                Debug.Log("Step");
+                Debug.Log(averageHitNormal);
+                Debug.Log(secondNormal);
+                newMovement = movement;     // Keep the movement vector the same
+
+                stepVector = Vector3.up * Mathf.Min(hitDifference, (Quaternion.FromToRotation(Vector3.up, averageHitNormal) * horMovement).y);    // Move up to accomodate
             }
-        }
-        else    // If the collision was with a wall
-        {
-            pushVelocity = Vector3.zero;    // If there was a pushVelocity, remove it
-            
-            // If we're on the ground
-            if(isGrounded)
+            else if(slope < slopeLimit)           // If the collision was with ground
             {
-                Vector3 wallVector = Vector3.ProjectOnPlane(horMovement, averageHitNormal);    // Get the movement vector along the wall
+                Vector3 projectedMovement = Vector3.ProjectOnPlane(movement, averageHitNormal);   // Get the movement vector along the ground plane
 
-                // If the horizontal angle of the collision is within the glance limit
-                if(Vector3.Angle(horMovement, -averageHitNormal) > 90 - wallLimit)
+                // If we were already on the ground
+                if(isGrounded)
                 {
-                    Debug.Log("Glance Collision");
-                    newMovement = wallVector + averageHitNormal;   // Set movement to the movement vector along the wall
-                    turnAngle = 0;
+                    Debug.Log("Ground Angle Adjust");
+                    newMovement = Quaternion.FromToRotation(movement, projectedMovement) * movement;    // Rotate our movement vector to align with the new ground normal
                 }
-                else    // If the horizontal angle of the collision is too sharp
+                else // If we weren't on the ground
                 {
-                    Debug.Log("Bounce Collision");
-                    if(velocity > highVelocity)     // If the player's going fast
-                    {
-                        pushVelocity = Vector3.ProjectOnPlane(averageHitNormal, Vector3.up) * horMovement.magnitude;      // Add a bounce velocity away from the wall
-                        newMovement = horMovement/2;                                                                // Reduce horizontal velocity
-                        newMovement += Vector3.up * 2;                                                              // Add a little hop
-                    }
-                    else                            // If the player's going slower
-                    {
-                        pushVelocity = Vector3.ProjectOnPlane(averageHitNormal, Vector3.up) * horMovement.magnitude;      // Add a smaller bounce velocity away from the wall
-                        newMovement = (horMovement + wallVector).normalized * horMovement.magnitude/2;              // Set the velocity more along the wall
-                    }
+                    Debug.Log("Landing Collision");
+                    newMovement = Vector3.ProjectOnPlane(horMovement, averageHitNormal);    // Remove any excess vertical velocity
                 }
-
-                newMovement += verMovement;     // Combine with vertical movement
             }
-            else    // If we're in midair
+            else    // If the collision was with a wall
             {
-                Debug.Log("Midair Collision");
-                Vector3 intoWallMovement = Vector3.Project(movement, averageHitNormal);
-                Vector3 alongWallMovement = Vector3.ProjectOnPlane(movement, averageHitNormal);
-
-                if(Vector3.Dot(intoWallMovement, averageHitNormal) < 0)     // If the collision was towards the wall, reflect the movement
-                {
-                    Debug.Log("Reflect");
-                    intoWallMovement = Vector3.ProjectOnPlane(Vector3.Reflect(intoWallMovement, averageHitNormal), Vector3.up);
-                }
-
-                newMovement = intoWallMovement + alongWallMovement;     // Sum the components
+                pushVelocity = Vector3.zero;    // If there was a pushVelocity, remove it
                 
-                Debug.Log(intoWallMovement);
-                Debug.Log(alongWallMovement);
+                // If we're on the ground
+                if(isGrounded)
+                {
+                    Vector3 wallVector = Vector3.ProjectOnPlane(horMovement, averageHitNormal);    // Get the movement vector along the wall
+
+                    // If the horizontal angle of the collision is within the glance limit
+                    if(Vector3.Angle(horMovement, -averageHitNormal) > 90 - wallLimit)
+                    {
+                        Debug.Log("Glance Collision");
+                        newMovement = wallVector + averageHitNormal;   // Set movement to the movement vector along the wall
+                        turnAngle = 0;
+                    }
+                    else    // If the horizontal angle of the collision is too sharp
+                    {
+                        Debug.Log("Bounce Collision");
+                        if(velocity > internalHighVelocity)     // If the player's going fast
+                        {
+                            pushVelocity = Vector3.ProjectOnPlane(averageHitNormal, Vector3.up) * horMovement.magnitude;      // Add a bounce velocity away from the wall
+                            newMovement = horMovement/2;                                                                // Reduce horizontal velocity
+                            newMovement += Vector3.up * 2;                                                              // Add a little hop
+                        }
+                        else                            // If the player's going slower
+                        {
+                            pushVelocity = Vector3.ProjectOnPlane(averageHitNormal, Vector3.up) * horMovement.magnitude;      // Add a smaller bounce velocity away from the wall
+                            newMovement = (horMovement + wallVector).normalized * horMovement.magnitude/2;              // Set the velocity more along the wall
+                        }
+                    }
+
+                    newMovement += verMovement;     // Combine with vertical movement
+                }
+                else    // If we're in midair
+                {
+                    Debug.Log("Midair Collision");
+                    Vector3 intoWallMovement = Vector3.Project(movement, averageHitNormal);
+                    Vector3 alongWallMovement = Vector3.ProjectOnPlane(movement, averageHitNormal);
+
+                    if(Vector3.Dot(intoWallMovement, averageHitNormal) < 0)     // If the collision was towards the wall, reflect the movement
+                    {
+                        Debug.Log("Reflect");
+                        intoWallMovement = Vector3.ProjectOnPlane(Vector3.Reflect(intoWallMovement, averageHitNormal), Vector3.up);
+                    }
+
+                    newMovement = intoWallMovement + alongWallMovement;     // Sum the components
+                    
+                    Debug.Log(intoWallMovement);
+                    Debug.Log(alongWallMovement);
+                }
             }
         }
 
@@ -495,11 +543,12 @@ public class PlayerMovement : MonoBehaviour
         Vector3 capsuleCenter = currentPosition + stepVector + coll.center + Vector3.up * groundCheckDistance;  // The center point of the capsule
         Vector3 capsuleHalfHeight = Vector3.up * (coll.height/2 - coll.radius);                                 // The vector from the center to one of the capsule points
         if(Physics.CapsuleCast(capsuleCenter - capsuleHalfHeight, capsuleCenter + capsuleHalfHeight, coll.radius,
-                               totalVelocity, out hit, totalVelocity.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment")))   // If we hit something
+                               totalVelocity, out hit, totalVelocity.magnitude * Time.fixedDeltaTime, LayerMask.GetMask("Environment", "Enemy"))    // If we hit something
+           && !(hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") && hitNormals.Contains(hit)))                                       // And the thing is not an enemy we've already hit
         {
             if(hitNormals.Count < 10)
             {
-                hitNormals.Add(hit.normal);
+                hitNormals.Add(hit);
                 OnCollision(newMovement, groundStick, hit, hitNormals);   // Handle the collision
             }
         }
@@ -530,6 +579,30 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(lockModelRotation()); 
             }
         }
+    }
+
+    private float CalculateTotalVelocity()
+    {
+        return (velocity * transform.forward + verticalVelocity * transform.up).magnitude;
+    }
+
+    public bool TryEnemyImpact(Enemy enemy, bool reducePlayerSpeed = true)
+    {
+        // If the enemy is in front of the player and the player is at a high velocity, we can run the enemy over
+        Vector3 fromToVector = enemy.transform.position - transform.position;
+        if(Vector3.Dot(fromToVector, transform.forward) > 0 && CalculateTotalVelocity() >= internalHighVelocity)
+        {
+            if(reducePlayerSpeed)
+            {
+                velocity *= (1 - runOverSpeedDecrease);
+            }
+
+            enemy.TakeDamage(GameManager.instance.player.motorcycleImpactDamage, KillType.collisionKill);
+
+            return true;
+        }
+
+        return false;
     }
 
     // This gets called whenever there is a change in the input for the Look action
@@ -574,7 +647,7 @@ public class PlayerMovement : MonoBehaviour
         driftInput = context.ReadValue<float>();        // Read the input value
         if(driftState == DriftState.None)               // If not currently drifting
         {
-            if(driftInput > 0 && Mathf.Abs(turnInput) > 0)          // If drift is pressed and a turn input is pressed
+            if(driftInput > 0 && Mathf.Abs(turnInput) > 0 && CalculateTotalVelocity() >= internalHighVelocity)  // If drift is pressed and a turn input is pressed, and we're at high velocity
             {
                 driftState = (DriftState)Mathf.Sign(turnInput);     // Drift in the turn direction
             }
@@ -613,7 +686,12 @@ public class PlayerMovement : MonoBehaviour
         // If the fire button was pressed
         if(!GameIsPaused() && canShoot && context.performed && context.ReadValue<float>() > 0)
         {
+
+            // Set default values
+            float distance = 100;
+            Vector3 hitNormal = Vector3.zero;
             Vector3 bulletDirection = Camera.main.transform.forward;
+            UnityAction performWhenBulletReachesDest = null;
 
             // Send a raycast out from the camera in the direction the player is looking
             RaycastHit hit;
@@ -625,14 +703,18 @@ public class PlayerMovement : MonoBehaviour
                 IShootable shootScript = hit.transform.GetComponent<IShootable>();  // Try to get an IShootable component
                 if(shootScript != null)                                             // If one was found
                 {
-                    shootScript.OnShoot();                                          // Call the shoot function
+                    performWhenBulletReachesDest = shootScript.OnShoot;     // Tell the bullet to call the shoot function
                 }
+
+                // Fill in the necessary bullet values
+                distance = hit.distance;
+                hitNormal = hit.normal;
                 bulletDirection = hit.point - bulletSpawnPoint.position;
             }
 
             anim.SetTrigger("Shoot");   // Trigger the shoot animation
             Bullet bulletScript = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity).GetComponent<Bullet>();
-            bulletScript.Initialize(bulletDirection.normalized * 200, 100);
+            bulletScript.Initialize(bulletDirection.normalized * 200, distance, hitNormal, performWhenBulletReachesDest);
 
             // Activate muzzle flare
             muzzleFlare.SetActive(true);
