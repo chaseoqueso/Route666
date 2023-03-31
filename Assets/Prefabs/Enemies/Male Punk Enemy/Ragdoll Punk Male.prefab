@@ -2664,7 +2664,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7031099684905544696}
   m_Layer: 0
-  m_Name: Ragdoll
+  m_Name: Ragdoll Punk Male
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

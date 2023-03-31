@@ -112,15 +112,7 @@ public class EnemySpawner : MonoBehaviour
             enemy.spawnPoint = this;
             enemy.playerLoc = playerLoc;
 
-            switch(enemy.EnemyID()){
-                case EnemyID.punkMale:
-                    RandomlyGenerateMalePunkEnemyAppearance(newEnemy);
-                    break;
-                case EnemyID.punkFemale:
-                    // TODO
-                    break;
-            }
-
+            RandomlyGenerateEnemyAppearance(newEnemy, enemy.EnemyID());
             UpdatePopOnNewSpawn();
         }
     }
@@ -138,19 +130,32 @@ public class EnemySpawner : MonoBehaviour
     }
 
     #region Random Enemy Appearance Generation
-        private void RandomlyGenerateMalePunkEnemyAppearance(GameObject newEnemy)
+        private void RandomlyGenerateEnemyAppearance(GameObject newEnemy, EnemyID enemyID)
         {
             SkinnedMeshRenderer[] meshRenderers = newEnemy.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
-            // Pick skin mat out here so that it can be the same for all categories
+            // Pick mats out here so that they will be the same on the ragdoll (I think?)
             Material skinMat = ChooseRandomSkinMat();
             Material vestMat = ChooseRandomClothesMat();
             Material shirtMat = ChooseRandomClothesMat();
             Material shoesMat = ChooseRandomClothesMat();
             Material hairMat = ChooseRandomHairMat();
-            Material earringMat = ChooseRandomEarringsMat();
+            Material jewelryMat = ChooseRandomEarringsMat();
             Material pantsMat = ChooseRandomClothesMat();
 
+            switch(enemyID){
+                case EnemyID.punkMale:
+                    RandomMalePunk(meshRenderers, skinMat, vestMat, shirtMat, shoesMat, hairMat, jewelryMat, pantsMat);
+                    break;
+
+                case EnemyID.punkFemale:
+                    RandomFemalePunk(meshRenderers, skinMat, vestMat, shirtMat, shoesMat, hairMat, jewelryMat, pantsMat);
+                    break;
+            }            
+        }
+
+        private void RandomMalePunk(SkinnedMeshRenderer[] meshRenderers, Material skinMat, Material vestMat, Material shirtMat, Material shoesMat, Material hairMat, Material jewelryMat, Material pantsMat)
+        {
             foreach(SkinnedMeshRenderer meshRenderer in meshRenderers){
                 string objectName = meshRenderer.gameObject.name;
 
@@ -175,7 +180,7 @@ public class EnemySpawner : MonoBehaviour
                     case "Punk_Head":
                         localMatArray[0] = skinMat;                     // skin
                         localMatArray[1] = hairMat;                     // hair
-                        localMatArray[2] = earringMat;                  // earrings
+                        localMatArray[2] = jewelryMat;                  // earrings
                         localMatArray[3] = hairMat;                     // hair
 
                         break;
@@ -190,7 +195,55 @@ public class EnemySpawner : MonoBehaviour
                         Debug.LogError("No case found for object name: " + objectName);
                         break;
                 }
+                meshRenderer.materials = localMatArray;
+            }
+        }
 
+        private void RandomFemalePunk(SkinnedMeshRenderer[] meshRenderers, Material skinMat, Material vestMat, Material shirtMat, Material shoesMat, Material hairMat, Material jewelryMat, Material pantsMat)
+        {
+            Material accessoryMat = ChooseRandomClothesMat();
+
+            foreach(SkinnedMeshRenderer meshRenderer in meshRenderers){
+                string objectName = meshRenderer.gameObject.name;
+
+                // Have to assign the entire array at once
+                // so store a local version to make changes to and then replace it on the object at the end
+                Material[] localMatArray = meshRenderer.materials;
+                
+                switch(objectName){
+                    case "Punk_Body":
+                        localMatArray[0] = skinMat;                    // skin
+                        localMatArray[1] = vestMat;                    // vest
+                        localMatArray[2] = shirtMat;                   // shirt
+
+                        break;
+
+                    case "Punk_Feet":
+                        localMatArray[0] = shoesMat;                    // shoes
+                        localMatArray[1] = accessoryMat;                // boot platforms
+
+                        break;
+
+                    case "Punk_Head":
+                        localMatArray[0] = skinMat;                     // skin
+                        localMatArray[1] = hairMat;                     // hair
+                        // skip eyes
+                        localMatArray[3] = jewelryMat;                  // jewelry
+                        localMatArray[4] = hairMat;                     // hair
+
+                        break;
+
+                    case "Punk_Legs":
+                        localMatArray[0] = accessoryMat;                // belt
+                        localMatArray[1] = pantsMat;                    // pants
+                        localMatArray[2] = skinMat;                     // skin
+
+                        break;
+
+                    default:
+                        Debug.LogError("No case found for object name: " + objectName);
+                        break;
+                }
                 meshRenderer.materials = localMatArray;
             }
         }
