@@ -47,7 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnTable:
   - enemyPrefab: {fileID: 8855367933392588843, guid: bee1b690fe81cff4d8b1b76581fbfd22, type: 3}
-    spawnChance: 100
+    spawnChance: 70
+  - enemyPrefab: {fileID: 8855367933392588843, guid: 2bf1044b2b895494c8672e37bd5a74c4, type: 3}
+    spawnChance: 30
   targetActiveEnemies: 10
   spawnDistanceFromPlayer: 50
   playerLoc: {fileID: 0}

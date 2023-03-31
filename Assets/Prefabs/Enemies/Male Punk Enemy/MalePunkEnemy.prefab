@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 8855367933392588844}
   - component: {fileID: 352306883417432389}
   m_Layer: 7
-  m_Name: MeleeEnemy
+  m_Name: MalePunkEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
