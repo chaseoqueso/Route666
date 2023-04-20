@@ -12,10 +12,14 @@ public class MeleeEnemy : Enemy
     // [Tooltip("If the enemy's calculated path distance to the player is this amount LONGER than the straight line distance to the player - and the player is w/in LOS - ranged attack instead")]
     // [SerializeField] protected float pathVsStraightDistanceLimit = 10;
 
-    void Start()
+    public override void Start()
     {
+        base.Start();
+        
         // The frame the animation would theoretically hit the player, do stuff
-        GetComponentInChildren<AnimationWatcher>().onAnimationTrigger.AddListener(MeleeAttack);
+        AnimationWatcher watcher = GetComponentInChildren<AnimationWatcher>();
+        if(watcher != null)
+            watcher.onAnimationTrigger.AddListener(MeleeAttack);
     }
 
     public void Update()
@@ -107,7 +111,7 @@ public class MeleeEnemy : Enemy
             case EnemyState.Attacking:
                 enemyAgent.destination = transform.position;
                 enemyAgent.velocity = new Vector3(0,0,0);
-                enemyAnimator.SetTrigger("Attack");
+                StartAttack();
                 break;
 
             case EnemyState.Leashed:
@@ -160,6 +164,11 @@ public class MeleeEnemy : Enemy
     private bool EnemyIsOutOfRangeOfEntity( Vector3 otherEntityPos, float radius )
     {
         return Vector3.Distance( transform.position, otherEntityPos ) >= radius;
+    }
+
+    public virtual void StartAttack()
+    {
+        enemyAnimator.SetTrigger("Attack");
     }
     
     public void MeleeAttack()

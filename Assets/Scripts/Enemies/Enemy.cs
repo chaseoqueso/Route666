@@ -72,7 +72,7 @@ public class Enemy : MonoBehaviour, IShootable
 
     [SerializeField] protected Animator enemyAnimator;
 
-    void Awake()
+    public virtual void Start()
     {
         if(ragdollList == null)
             ragdollList = new List<GameObject>();
